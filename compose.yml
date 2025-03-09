@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgres:15
+    container_name: db-postgres
+    env_file: .env
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
+    ports:
+      - "${HOST_DB_PORT}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  db-test:
+    image: postgres:15
+    container_name: db-test-postgres
+    env_file: .env
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 2048M
+    ports:
+      - "${HOST_DB_TEST_PORT}:5432"
+    volumes:
+      - db-data-test:/var/lib/postgresql/data
+
+volumes:
+  db-data:
+  db-data-test:

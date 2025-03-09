@@ -1,25 +1,28 @@
 package com.branas.clean_architecture;
 
 public class ValidateCpf {
+
     private static final int FACTOR_FIRST_DIGIT = 10;
     private static final int FACTOR_SECOND_DIGIT = 11;
+    private static final String NON_NUMERIC_CHARACTER = "\\D";
 
     public boolean validate(String rawCpf) {
-        if (rawCpf == null || rawCpf.isEmpty()) return false;
-        String cpf = removeNonDigits(rawCpf);
-        if (!isValidLength(cpf)) return false;
+        if (rawCpf == null) return false;
+        if(rawCpf.isEmpty()) return false;
+        String cpf = clean(rawCpf);
+        if (isInvalidLength(cpf)) return false;
         if (allDigitsEqual(cpf)) return false;
         int firstDigit = calculateDigit(cpf, FACTOR_FIRST_DIGIT);
         int secondDigit = calculateDigit(cpf, FACTOR_SECOND_DIGIT);
-        return extractDigit(cpf).equals(String.valueOf(firstDigit) + secondDigit);
+        return extractDigits(cpf).equals(String.valueOf(firstDigit) + secondDigit);
     }
 
-    private static String removeNonDigits(String cpf) {
-        return cpf.replaceAll("\\D", "");
+    private static String clean(String text) {
+        return text.replaceAll(NON_NUMERIC_CHARACTER, "");
     }
 
-    private static boolean isValidLength(String cpf) {
-        return cpf.length() == 11;
+    private static boolean isInvalidLength(String cpf) {
+        return cpf.length() != 11;
     }
 
     private static boolean allDigitsEqual(String cpf) {
@@ -29,17 +32,17 @@ public class ValidateCpf {
 
     private static int calculateDigit(String cpf, int factor) {
         int total = 0;
+
         for (int i = 0; i < cpf.length() - 1; i++) {
-            int digit = Character.getNumericValue(cpf.charAt(i));
             if(factor > 1){
-                total += digit * factor--;
+                total += Character.getNumericValue(cpf.charAt(i)) * factor--;
             }
         }
         int remainder = total % 11;
         return (remainder < 2) ? 0 : 11 - remainder;
     }
 
-    private static String extractDigit(String cpf) {
+    private static String extractDigits(String cpf) {
         return cpf.substring(9);
     }
 }
