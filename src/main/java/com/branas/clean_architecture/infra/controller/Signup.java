@@ -1,12 +1,12 @@
-package com.branas.clean_architecture;
+package com.branas.clean_architecture.infra.controller;
 
+import com.branas.clean_architecture.SignupDatabase;
+import com.branas.clean_architecture.SignupRequestInput;
+import com.branas.clean_architecture.ValidateCpf;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -15,9 +15,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/signup")
@@ -27,12 +25,12 @@ public class Signup {
     DataSource dataSource;
 
     @PostMapping()
-    public Object signup(@RequestBody SignupRequestInput signupRequestInput) {
+    public ResponseEntity<?> signup(@RequestBody SignupRequestInput signupRequestInput) {
         var result = "";
 
         List<SignupDatabase> signupsByEmailDatabase = new ArrayList<>();
         try (Connection con = dataSource.getConnection();
-             PreparedStatement ps = con.prepareStatement("select * from uber_clone.account where email = ?");) {
+             PreparedStatement ps = con.prepareStatement("select * from ccca.account where email = ?");) {
             ps.setString(1, signupRequestInput.email());
             try (ResultSet rs = ps.executeQuery();) {
                 while (rs.next()) {
@@ -54,7 +52,7 @@ public class Signup {
                         if(new ValidateCpf().validate(signupRequestInput.cpf())) {
                             if(signupRequestInput.isDriver()){
                                 if(signupRequestInput.carPlate().matches("[A-Z]{3}[0-9]{4}")) {
-                                    final PreparedStatement insertStatement = con.prepareStatement("insert into uber_clone.account (account_id, name, email, cpf, car_plate, is_passenger, is_driver) values (?, ?, ?, ?, ?, ?, ?)");
+                                    final PreparedStatement insertStatement = con.prepareStatement("insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver) values (?, ?, ?, ?, ?, ?, ?)");
                                     insertStatement.setObject(1, id, java.sql.Types.OTHER);
                                     insertStatement.setString(2, signupRequestInput.name());
                                     insertStatement.setString(3, signupRequestInput.email());
@@ -71,7 +69,7 @@ public class Signup {
                                     result = String.valueOf(-5);
                                 }
                             } else {
-                                final PreparedStatement insertStatement = con.prepareStatement("insert into uber_clone.account (account_id, name, email, cpf, car_plate, is_passenger, is_driver) values (?, ?, ?, ?, ?, ?, ?)");
+                                final PreparedStatement insertStatement = con.prepareStatement("insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver) values (?, ?, ?, ?, ?, ?, ?)");
                                 insertStatement.setObject(1, id, java.sql.Types.OTHER);
                                 insertStatement.setString(2, signupRequestInput.name());
                                 insertStatement.setString(3, signupRequestInput.email());
@@ -107,6 +105,30 @@ public class Signup {
             return ResponseEntity.status(422).body(result);
         } else {
             return ResponseEntity.ok().body(result);
+        }
+    }
+
+    @GetMapping("/{accountId}")
+    public ResponseEntity<?> getAccount(@PathVariable UUID accountId) {
+        try (
+                Connection con = dataSource.getConnection();
+                PreparedStatement ps = con.prepareStatement("select * from account where account_id = ?");
+        ) {
+            ps.setObject(1, accountId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    Map<String, Object> accountData = new HashMap<>();
+                    accountData.put("id", rs.getObject("account_id"));
+                    accountData.put("email", rs.getString("email"));
+                    accountData.put("name", rs.getString("name"));
+                    return ResponseEntity.ok(accountData);
+                } else {
+                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Account not found");
+                }
+            }
+
+        } catch (SQLException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error: " + e.getMessage());
         }
     }
 

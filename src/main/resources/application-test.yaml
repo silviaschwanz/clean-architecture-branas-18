@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: ${DB_TEST_URL}
+  flyway:
+    cleanDisabled: false
