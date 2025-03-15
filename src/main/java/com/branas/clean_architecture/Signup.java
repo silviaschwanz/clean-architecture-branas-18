@@ -1,33 +1,29 @@
-package com.branas.clean_architecture.infra.controller;
+package com.branas.clean_architecture;
 
-import com.branas.clean_architecture.SignupDatabase;
-import com.branas.clean_architecture.SignupRequestInput;
-import com.branas.clean_architecture.ValidateCpf;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.branas.clean_architecture.driver.AccountResponse;
+import com.branas.clean_architecture.driver.SignupRequestInput;
+import com.branas.clean_architecture.driver.SignupResponse;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
-@RestController
-@RequestMapping("/signup")
+@Service
 public class Signup {
 
     @Autowired
     DataSource dataSource;
 
-    @PostMapping()
-    public ResponseEntity<?> signup(@RequestBody SignupRequestInput signupRequestInput) {
-        var result = "";
-        ObjectMapper mapper = new ObjectMapper();
+    public SignupResponse execute(SignupRequestInput signupRequestInput) {
         List<SignupDatabase> signupsByEmailDatabase = new ArrayList<>();
         try (Connection con = dataSource.getConnection();
              PreparedStatement ps = con.prepareStatement("select * from account where email = ?");) {
@@ -46,27 +42,21 @@ public class Signup {
                 }
             }
             if(!signupsByEmailDatabase.isEmpty()) {
-                result = mapper.writeValueAsString(Map.of("error", "O email já existe"));
-                return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
+                throw new IllegalArgumentException("O email já existe");
             }
             String id = UUID.randomUUID().toString();
             String passwordAlgorithm = UUID.randomUUID().toString();
             if(!signupRequestInput.name().matches("[a-zA-Z]+\\s[a-zA-Z]+")) {
-                result = mapper.writeValueAsString(Map.of("error", "Nome inválido"));
-                return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
+                throw new IllegalArgumentException("Nome inválido");
             }
             if(!signupRequestInput.email().matches("^(.+)@(.+)$")) {
-                result = mapper.writeValueAsString(Map.of("error", "Email inválido"));
-                return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
+                throw new IllegalArgumentException("Email inválido");
             }
             if(!new ValidateCpf().validate(signupRequestInput.cpf())) {
-                result = mapper.writeValueAsString(Map.of("error", "Cpf inválido"));
-                return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
+                throw new IllegalArgumentException("Cpf inválido");
             }
             if(signupRequestInput.isDriver() && !signupRequestInput.carPlate().matches("[A-Z]{3}[0-9]{4}")){
-                result = mapper.writeValueAsString(Map.of("error", "Placa do carro inválida"));
-                return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
-
+                throw new IllegalArgumentException("Placa do carro inválida");
             }
             final PreparedStatement insertStatement = con.prepareStatement("insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver, password, password_algorithm) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
             insertStatement.setObject(1, id, java.sql.Types.OTHER);
@@ -79,38 +69,34 @@ public class Signup {
             insertStatement.setString(8, signupRequestInput.password());
             insertStatement.setString(9, passwordAlgorithm);
             insertStatement.executeUpdate();
-            result = mapper.writeValueAsString(Map.of("accountId", id));
+            return new SignupResponse(id);
         } catch (SQLException e) {
             e.printStackTrace();
-            return ResponseEntity.status(500).body("Erro: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
         } catch (Exception e){
             e.printStackTrace(); // ou use um logger
-            return ResponseEntity.status(500).body("Erro: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
-        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(result);
     }
 
-    @GetMapping("/{accountId}")
-    public ResponseEntity<?> getAccount(@PathVariable UUID accountId) {
+    public AccountResponse getAccount(@PathVariable UUID accountId) {
         try (
                 Connection con = dataSource.getConnection();
                 PreparedStatement ps = con.prepareStatement("select * from account where account_id = ?");
         ) {
             ps.setObject(1, accountId);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    Map<String, Object> accountData = new HashMap<>();
-                    accountData.put("id", rs.getObject("account_id"));
-                    accountData.put("email", rs.getString("email"));
-                    accountData.put("name", rs.getString("name"));
-                    return ResponseEntity.ok(accountData);
-                } else {
-                    return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Account not found");
+                if (!rs.next()) {
+                    throw new EntityNotFoundException("Não foi encontrada conta com o accountId informado");
                 }
+                return new AccountResponse(
+                        rs.getObject("account_id").toString(),
+                        rs.getString("email"),
+                        rs.getString("name")
+                );
             }
-
         } catch (SQLException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Database error: " + e.getMessage());
+            throw new RuntimeException(e.getMessage());
         }
     }
 

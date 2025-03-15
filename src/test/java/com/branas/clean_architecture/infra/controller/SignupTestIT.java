@@ -1,7 +1,7 @@
 package com.branas.clean_architecture.infra.controller;
 
 import com.branas.clean_architecture.DatabaseTestContainer;
-import com.branas.clean_architecture.SignupRequestInput;
+import com.branas.clean_architecture.driver.SignupRequestInput;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -218,7 +218,7 @@ class SignupTestIT extends DatabaseTestContainer{
                 .then()
                 .statusCode(200)
                 .body("name", is("joao"))
-                .body("id", is(accountUuid.toString()))
+                .body("accountId", is(accountUuid.toString()))
                 .body("email", is("joao@gmail.com.br"));
     }
 
