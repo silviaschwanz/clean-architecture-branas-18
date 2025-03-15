@@ -3,13 +3,13 @@ package com.branas.clean_architecture.infra.controller;
 import com.branas.clean_architecture.SignupDatabase;
 import com.branas.clean_architecture.SignupRequestInput;
 import com.branas.clean_architecture.ValidateCpf;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.json.Json;
-import javax.json.JsonObject;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -27,10 +27,10 @@ public class Signup {
     @PostMapping()
     public ResponseEntity<?> signup(@RequestBody SignupRequestInput signupRequestInput) {
         var result = "";
-
+        ObjectMapper mapper = new ObjectMapper();
         List<SignupDatabase> signupsByEmailDatabase = new ArrayList<>();
         try (Connection con = dataSource.getConnection();
-             PreparedStatement ps = con.prepareStatement("select * from ccca.account where email = ?");) {
+             PreparedStatement ps = con.prepareStatement("select * from account where email = ?");) {
             ps.setString(1, signupRequestInput.email());
             try (ResultSet rs = ps.executeQuery();) {
                 while (rs.next()) {
@@ -47,12 +47,13 @@ public class Signup {
             }
             if(signupsByEmailDatabase.isEmpty()) {
                 String id = UUID.randomUUID().toString();
+                String passwordAlgorithm = UUID.randomUUID().toString();
                 if(signupRequestInput.name().matches("[a-zA-Z]+\\s[a-zA-Z]+")) {
                     if(signupRequestInput.email().matches("^(.+)@(.+)$")) {
                         if(new ValidateCpf().validate(signupRequestInput.cpf())) {
                             if(signupRequestInput.isDriver()){
                                 if(signupRequestInput.carPlate().matches("[A-Z]{3}[0-9]{4}")) {
-                                    final PreparedStatement insertStatement = con.prepareStatement("insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver) values (?, ?, ?, ?, ?, ?, ?)");
+                                    final PreparedStatement insertStatement = con.prepareStatement("insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver, password, password_algorithm) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
                                     insertStatement.setObject(1, id, java.sql.Types.OTHER);
                                     insertStatement.setString(2, signupRequestInput.name());
                                     insertStatement.setString(3, signupRequestInput.email());
@@ -60,16 +61,15 @@ public class Signup {
                                     insertStatement.setString(5, signupRequestInput.carPlate());
                                     insertStatement.setBoolean(6, signupRequestInput.isPassenger());
                                     insertStatement.setBoolean(7, signupRequestInput.isDriver());
+                                    insertStatement.setString(8, signupRequestInput.password());
+                                    insertStatement.setString(9, passwordAlgorithm);
                                     insertStatement.executeUpdate();
-                                    final JsonObject obj = Json.createObjectBuilder()
-                                            .add("accountId", id)
-                                            .build();
-                                    result = obj.toString();
+                                    result = mapper.writeValueAsString(Map.of("accountId", id));
                                 } else {
                                     result = String.valueOf(-5);
                                 }
                             } else {
-                                final PreparedStatement insertStatement = con.prepareStatement("insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver) values (?, ?, ?, ?, ?, ?, ?)");
+                                final PreparedStatement insertStatement = con.prepareStatement("insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver, password, password_algorithm) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
                                 insertStatement.setObject(1, id, java.sql.Types.OTHER);
                                 insertStatement.setString(2, signupRequestInput.name());
                                 insertStatement.setString(3, signupRequestInput.email());
@@ -77,35 +77,35 @@ public class Signup {
                                 insertStatement.setString(5, signupRequestInput.carPlate());
                                 insertStatement.setBoolean(6, signupRequestInput.isPassenger());
                                 insertStatement.setBoolean(7, signupRequestInput.isDriver());
+                                insertStatement.setString(8, signupRequestInput.password());
+                                insertStatement.setString(9, passwordAlgorithm);
                                 insertStatement.executeUpdate();
-                                final JsonObject obj = Json.createObjectBuilder()
-                                        .add("accountId", id)
-                                        .build();
-                                result = obj.toString();
+                                result = mapper.writeValueAsString(Map.of("accountId", id));
                             }
                         } else {
-                            // invalid cpf
-                            result = String.valueOf(-1);
+                            result = mapper.writeValueAsString(Map.of("error", "Cpf inválido"));
+                            return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
                         }
                     } else {
-                        // invalid email
-                        result = String.valueOf(-2);
+                        result = mapper.writeValueAsString(Map.of("error", "Email inválido"));
+                        return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
                     }
                 } else {
-                    // invalid name
-                    result = String.valueOf(-3);
+                    result = mapper.writeValueAsString(Map.of("error", "Nome inválido"));
+                    return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
                 }
             } else {
-                // already exists
-                result = String.valueOf(-4);
+                result = mapper.writeValueAsString(Map.of("error", "O email já existe"));
+                return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).body("Erro: " + e.getMessage());
+        } catch (Exception e){
+            e.printStackTrace(); // ou use um logger
+            return ResponseEntity.status(500).body("Erro: " + e.getMessage());
         }
-        if(result.matches("-?\\d+")) {
-            return ResponseEntity.status(422).body(result);
-        } else {
-            return ResponseEntity.ok().body(result);
-        }
+        return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(result);
     }
 
     @GetMapping("/{accountId}")
