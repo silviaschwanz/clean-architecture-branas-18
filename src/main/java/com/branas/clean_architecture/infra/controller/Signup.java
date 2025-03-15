@@ -66,7 +66,8 @@ public class Signup {
                                     insertStatement.executeUpdate();
                                     result = mapper.writeValueAsString(Map.of("accountId", id));
                                 } else {
-                                    result = String.valueOf(-5);
+                                    result = mapper.writeValueAsString(Map.of("error", "Placa do carro inválida"));
+                                    return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
                                 }
                             } else {
                                 final PreparedStatement insertStatement = con.prepareStatement("insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver, password, password_algorithm) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");

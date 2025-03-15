@@ -133,6 +133,28 @@ class SignupTestIT extends DatabaseTestContainer{
     }
 
     @Test
+    @DisplayName("Não deve criar a conta de um motorista com placa inválido")
+    void signupInvalidCarPlate(){
+        var signupRequestInput = new SignupRequestInput(
+                "Joao Paulo",
+                "joao@gmail.com.br",
+                "97456321558",
+                "A23",
+                false,
+                true,
+                "123"
+        );
+        given()
+                .contentType(ContentType.JSON)
+                .body(signupRequestInput)
+                .when()
+                .post("/signup")
+                .then()
+                .statusCode(400)
+                .body("error", is("Placa do carro inválida"));
+    }
+
+    @Test
     @DisplayName("Não deve criar conta de um passageiro com email duplicado")
     void signupDuplicateAccount() {
         var accountUuid = UUID.randomUUID();
