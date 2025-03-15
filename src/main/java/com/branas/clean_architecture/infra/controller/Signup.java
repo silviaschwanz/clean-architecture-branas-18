@@ -45,60 +45,41 @@ public class Signup {
                     ));
                 }
             }
-            if(signupsByEmailDatabase.isEmpty()) {
-                String id = UUID.randomUUID().toString();
-                String passwordAlgorithm = UUID.randomUUID().toString();
-                if(signupRequestInput.name().matches("[a-zA-Z]+\\s[a-zA-Z]+")) {
-                    if(signupRequestInput.email().matches("^(.+)@(.+)$")) {
-                        if(new ValidateCpf().validate(signupRequestInput.cpf())) {
-                            if(signupRequestInput.isDriver()){
-                                if(signupRequestInput.carPlate().matches("[A-Z]{3}[0-9]{4}")) {
-                                    final PreparedStatement insertStatement = con.prepareStatement("insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver, password, password_algorithm) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                                    insertStatement.setObject(1, id, java.sql.Types.OTHER);
-                                    insertStatement.setString(2, signupRequestInput.name());
-                                    insertStatement.setString(3, signupRequestInput.email());
-                                    insertStatement.setString(4, signupRequestInput.cpf());
-                                    insertStatement.setString(5, signupRequestInput.carPlate());
-                                    insertStatement.setBoolean(6, signupRequestInput.isPassenger());
-                                    insertStatement.setBoolean(7, signupRequestInput.isDriver());
-                                    insertStatement.setString(8, signupRequestInput.password());
-                                    insertStatement.setString(9, passwordAlgorithm);
-                                    insertStatement.executeUpdate();
-                                    result = mapper.writeValueAsString(Map.of("accountId", id));
-                                } else {
-                                    result = mapper.writeValueAsString(Map.of("error", "Placa do carro inválida"));
-                                    return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
-                                }
-                            } else {
-                                final PreparedStatement insertStatement = con.prepareStatement("insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver, password, password_algorithm) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                                insertStatement.setObject(1, id, java.sql.Types.OTHER);
-                                insertStatement.setString(2, signupRequestInput.name());
-                                insertStatement.setString(3, signupRequestInput.email());
-                                insertStatement.setString(4, signupRequestInput.cpf());
-                                insertStatement.setString(5, signupRequestInput.carPlate());
-                                insertStatement.setBoolean(6, signupRequestInput.isPassenger());
-                                insertStatement.setBoolean(7, signupRequestInput.isDriver());
-                                insertStatement.setString(8, signupRequestInput.password());
-                                insertStatement.setString(9, passwordAlgorithm);
-                                insertStatement.executeUpdate();
-                                result = mapper.writeValueAsString(Map.of("accountId", id));
-                            }
-                        } else {
-                            result = mapper.writeValueAsString(Map.of("error", "Cpf inválido"));
-                            return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
-                        }
-                    } else {
-                        result = mapper.writeValueAsString(Map.of("error", "Email inválido"));
-                        return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
-                    }
-                } else {
-                    result = mapper.writeValueAsString(Map.of("error", "Nome inválido"));
-                    return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
-                }
-            } else {
+            if(!signupsByEmailDatabase.isEmpty()) {
                 result = mapper.writeValueAsString(Map.of("error", "O email já existe"));
                 return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
             }
+            String id = UUID.randomUUID().toString();
+            String passwordAlgorithm = UUID.randomUUID().toString();
+            if(!signupRequestInput.name().matches("[a-zA-Z]+\\s[a-zA-Z]+")) {
+                result = mapper.writeValueAsString(Map.of("error", "Nome inválido"));
+                return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
+            }
+            if(!signupRequestInput.email().matches("^(.+)@(.+)$")) {
+                result = mapper.writeValueAsString(Map.of("error", "Email inválido"));
+                return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
+            }
+            if(!new ValidateCpf().validate(signupRequestInput.cpf())) {
+                result = mapper.writeValueAsString(Map.of("error", "Cpf inválido"));
+                return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
+            }
+            if(signupRequestInput.isDriver() && !signupRequestInput.carPlate().matches("[A-Z]{3}[0-9]{4}")){
+                result = mapper.writeValueAsString(Map.of("error", "Placa do carro inválida"));
+                return ResponseEntity.status(400).contentType(MediaType.APPLICATION_JSON).body(result);
+
+            }
+            final PreparedStatement insertStatement = con.prepareStatement("insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver, password, password_algorithm) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            insertStatement.setObject(1, id, java.sql.Types.OTHER);
+            insertStatement.setString(2, signupRequestInput.name());
+            insertStatement.setString(3, signupRequestInput.email());
+            insertStatement.setString(4, signupRequestInput.cpf());
+            insertStatement.setString(5, signupRequestInput.carPlate());
+            insertStatement.setBoolean(6, signupRequestInput.isPassenger());
+            insertStatement.setBoolean(7, signupRequestInput.isDriver());
+            insertStatement.setString(8, signupRequestInput.password());
+            insertStatement.setString(9, passwordAlgorithm);
+            insertStatement.executeUpdate();
+            result = mapper.writeValueAsString(Map.of("accountId", id));
         } catch (SQLException e) {
             e.printStackTrace();
             return ResponseEntity.status(500).body("Erro: " + e.getMessage());
