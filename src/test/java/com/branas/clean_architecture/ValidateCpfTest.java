@@ -1,5 +1,6 @@
 package com.branas.clean_architecture;
 
+import com.branas.clean_architecture.application.ValidateCpf;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

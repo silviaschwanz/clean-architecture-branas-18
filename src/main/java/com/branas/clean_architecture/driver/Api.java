@@ -1,6 +1,6 @@
 package com.branas.clean_architecture.driver;
 
-import com.branas.clean_architecture.*;
+import com.branas.clean_architecture.application.Signup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

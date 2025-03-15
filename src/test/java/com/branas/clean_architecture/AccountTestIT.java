@@ -1,5 +1,6 @@
 package com.branas.clean_architecture;
 
+import com.branas.clean_architecture.application.Signup;
 import com.branas.clean_architecture.driver.AccountResponse;
 import com.branas.clean_architecture.driver.SignupRequestInput;
 import com.branas.clean_architecture.driver.SignupResponse;

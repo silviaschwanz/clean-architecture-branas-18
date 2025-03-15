@@ -1,4 +1,4 @@
-package com.branas.clean_architecture;
+package com.branas.clean_architecture.application;
 
 public class ValidateCpf {
 
