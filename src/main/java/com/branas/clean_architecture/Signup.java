@@ -73,9 +73,6 @@ public class Signup {
         } catch (SQLException e) {
             e.printStackTrace();
             throw new RuntimeException(e.getMessage());
-        } catch (Exception e){
-            e.printStackTrace(); // ou use um logger
-            throw new RuntimeException(e.getMessage());
         }
     }
 

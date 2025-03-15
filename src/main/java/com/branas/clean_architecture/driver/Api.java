@@ -25,8 +25,8 @@ public class Api {
         try {
             SignupResponse response = signup.execute(signupRequestInput);
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ResponseError(e.getMessage()));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ResponseError(e.getMessage()));
         }
 
     }
@@ -36,7 +36,7 @@ public class Api {
         try {
             AccountResponse response = signup.getAccount(accountId);
             return ResponseEntity.ok().body(response);
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseError(e.getMessage()));
         }
 

@@ -1,7 +1,6 @@
-package com.branas.clean_architecture.infra.controller;
+package com.branas.clean_architecture.driver;
 
 import com.branas.clean_architecture.DatabaseTestContainer;
-import com.branas.clean_architecture.driver.SignupRequestInput;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -24,7 +23,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class SignupTestIT extends DatabaseTestContainer{
+class ApiTestIT extends DatabaseTestContainer{
 
     @LocalServerPort
     int port;
@@ -84,7 +83,7 @@ class SignupTestIT extends DatabaseTestContainer{
                 .when()
                 .post("/signup")
                 .then()
-                .statusCode(400)
+                .statusCode(422)
                 .body("error", is("Nome inválido"));
     }
 
@@ -106,7 +105,7 @@ class SignupTestIT extends DatabaseTestContainer{
                 .when()
                 .post("/signup")
                 .then()
-                .statusCode(400)
+                .statusCode(422)
                 .body("error", is("Email inválido"));
     }
 
@@ -128,7 +127,7 @@ class SignupTestIT extends DatabaseTestContainer{
                 .when()
                 .post("/signup")
                 .then()
-                .statusCode(400)
+                .statusCode(422)
                 .body("error", is("Cpf inválido"));
     }
 
@@ -150,7 +149,7 @@ class SignupTestIT extends DatabaseTestContainer{
                 .when()
                 .post("/signup")
                 .then()
-                .statusCode(400)
+                .statusCode(422)
                 .body("error", is("Placa do carro inválida"));
     }
 
@@ -188,7 +187,7 @@ class SignupTestIT extends DatabaseTestContainer{
                 .when()
                 .post("/signup")
                 .then()
-                .statusCode(400)
+                .statusCode(422)
                 .body("error", is("O email já existe"));
     }
 
