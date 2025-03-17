@@ -3,3 +3,7 @@ spring:
     url: ${DB_TEST_URL}
   flyway:
     cleanDisabled: false
+
+testcontainers:
+  reuse:
+    enable: true

@@ -1,6 +1,6 @@
 package com.branas.clean_architecture.driver;
 
-import com.branas.clean_architecture.DatabaseTestContainer;
+import com.branas.clean_architecture.ContainersConfig;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -23,7 +25,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class ApiTestIT extends DatabaseTestContainer{
+@ActiveProfiles("test")
+@Import(ContainersConfig.class)
+class ApiTestIT {
 
     @LocalServerPort
     int port;
@@ -181,7 +185,7 @@ class ApiTestIT extends DatabaseTestContainer{
                 false,
                 "123"
         );
-      given()
+        given()
                 .contentType(ContentType.JSON)
                 .body(signupRequestInput)
                 .when()

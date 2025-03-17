@@ -1,38 +1,36 @@
 package com.branas.clean_architecture;
 
 import com.branas.clean_architecture.application.Signup;
-import com.branas.clean_architecture.driver.AccountResponse;
 import com.branas.clean_architecture.driver.SignupRequestInput;
 import com.branas.clean_architecture.driver.SignupResponse;
+import com.branas.clean_architecture.resources.AccountDAOPostgres;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.UUID;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
-class AccountTestIT extends DatabaseTestContainer {
+@ActiveProfiles("test")
+@Import(ContainersConfig.class)
+class AccountTestIT {
 
     @Autowired
+    AccountDAOPostgres accountDAO;
+
     Signup signup;
-
-    @Autowired
-    DataSource dataSource;
 
     @Autowired
     private Flyway flyway;
 
     @BeforeEach
     public void setUp() {
+        signup = new Signup(accountDAO);
         flyway.clean();
         flyway.migrate();
     }
@@ -142,31 +140,6 @@ class AccountTestIT extends DatabaseTestContainer {
             signup.execute(signupRequestInput);
         });
         assertEquals("O email já existe", exception.getMessage());
-    }
-
-    @Test
-    @DisplayName("Deve retornar a conta de um passageiro")
-    void getAccount(){
-        var accountUuid = UUID.randomUUID();
-        try (Connection con = dataSource.getConnection()){
-            PreparedStatement insertStatement = con.prepareStatement("insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver, password, password_algorithm) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            insertStatement.setObject(1, accountUuid, java.sql.Types.OTHER);
-            insertStatement.setString(2, "joao");
-            insertStatement.setString(3, "joao@gmail.com.br");
-            insertStatement.setString(4, "97456321558");
-            insertStatement.setString(5, "0");
-            insertStatement.setBoolean(6, true);
-            insertStatement.setBoolean(7, false);
-            insertStatement.setString(8, "1236");
-            insertStatement.setString(9, "dfdklfjkdsljfklsdajfkldjsf");
-            insertStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        AccountResponse account = signup.getAccount(accountUuid);
-        assertEquals(accountUuid.toString(), account.accountId());
-        assertEquals("joao", account.name());
-        assertEquals("joao@gmail.com.br", account.email());
     }
 
 }

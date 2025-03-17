@@ -1,7 +1,9 @@
 package com.branas.clean_architecture.driver;
 
+import java.util.UUID;
+
 public record AccountResponse(
-        String accountId,
+        UUID accountId,
         String email,
         String name
 ) {
