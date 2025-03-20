@@ -1,9 +1,9 @@
 package com.branas.clean_architecture.application;
 
 import com.branas.clean_architecture.ContainersConfig;
+import com.branas.clean_architecture.driven.AccountDAOPostgres;
 import com.branas.clean_architecture.driver.AccountResponse;
 import com.branas.clean_architecture.driver.SignupRequestInput;
-import com.branas.clean_architecture.resources.AccountDAOPostgres;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,12 +26,12 @@ class GetAccountTestIT {
     @Autowired
     private Flyway flyway;
 
+    @Autowired
     GetAccount getAccount;
 
 
     @BeforeEach
     public void setUp() {
-        getAccount = new GetAccount(accountDAO);
         flyway.clean();
         flyway.migrate();
     }

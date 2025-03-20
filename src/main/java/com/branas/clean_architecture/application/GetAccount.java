@@ -1,7 +1,6 @@
 package com.branas.clean_architecture.application;
 
 import com.branas.clean_architecture.driver.AccountResponse;
-import com.branas.clean_architecture.resources.AccountDAO;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;

@@ -1,8 +1,11 @@
-package com.branas.clean_architecture.resources;
+package com.branas.clean_architecture.driven;
 
+import com.branas.clean_architecture.application.AccountDAO;
 import com.branas.clean_architecture.driver.AccountResponse;
 import com.branas.clean_architecture.driver.SignupRequestInput;
 import com.branas.clean_architecture.driver.SignupResponse;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
@@ -12,13 +15,29 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
+@Primary
 @Service
-public class AccountDAOPostgres implements AccountDAO{
+public class AccountDAOPostgres implements AccountDAO {
 
     private final DataSource dataSource;
 
     public AccountDAOPostgres(DataSource dataSource) {
         this.dataSource = dataSource;
+    }
+
+    @Override
+    public void accountAlreadyExists(String email) {
+        try (Connection con = dataSource.getConnection()){
+            PreparedStatement ps = con.prepareStatement("select * from account where email = ?");
+            ps.setString(1, email);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    throw new IllegalStateException("Já existe uma conta com o email informado");
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao buscar conta pelo e-mail: " + email, e);
+        }
     }
 
     public AccountResponse getAccountById(UUID accountId) {
@@ -35,7 +54,7 @@ public class AccountDAOPostgres implements AccountDAO{
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao buscar conta pelo id: " + accountId, e);
         }
-        return null;
+        throw new EntityNotFoundException("Account não encontrada com o accountId informado");
     }
 
     public AccountResponse getAccountByEmail(String email) {
@@ -52,7 +71,7 @@ public class AccountDAOPostgres implements AccountDAO{
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao buscar conta pelo e-mail: " + email, e);
         }
-        return null;
+        throw new EntityNotFoundException("Account não encontrada com o email informado");
     }
 
     public SignupResponse saveAccount(SignupRequestInput signupRequestInput) {
@@ -71,7 +90,7 @@ public class AccountDAOPostgres implements AccountDAO{
             insertStatement.setBoolean(6, signupRequestInput.isPassenger());
             insertStatement.setBoolean(7, signupRequestInput.isDriver());
             insertStatement.setString(8, signupRequestInput.password());
-            insertStatement.setString(9, passwordAlgorithm);
+            insertStatement.setString(9, PasswordService.encodePassword(signupRequestInput.password()));
             int rowsInserted = insertStatement.executeUpdate();
             if (rowsInserted == 0) {
                 throw new RuntimeException("Falha ao inserir conta, nenhuma linha foi afetada.");

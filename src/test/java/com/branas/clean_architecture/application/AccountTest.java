@@ -1,35 +1,26 @@
-package com.branas.clean_architecture;
+package com.branas.clean_architecture.application;
 
-import com.branas.clean_architecture.application.Signup;
+import com.branas.clean_architecture.driven.AccountDAOMemory;
+import com.branas.clean_architecture.driven.PasswordService;
 import com.branas.clean_architecture.driver.SignupRequestInput;
 import com.branas.clean_architecture.driver.SignupResponse;
-import com.branas.clean_architecture.driven.AccountDAOPostgres;
-import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Import(ContainersConfig.class)
-class AccountTestIT {
+class AccountTest {
 
-    @Autowired
+    AccountDAOMemory accountDAO;
     Signup signup;
-
-    @Autowired
-    private Flyway flyway;
 
     @BeforeEach
     public void setUp() {
-        flyway.clean();
-        flyway.migrate();
+        accountDAO = new AccountDAOMemory();
+        signup = new Signup(accountDAO);
     }
 
     @Test

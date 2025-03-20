@@ -2,7 +2,7 @@ package com.branas.clean_architecture.driver;
 
 import com.branas.clean_architecture.application.GetAccount;
 import com.branas.clean_architecture.application.Signup;
-import com.branas.clean_architecture.resources.AccountDAOPostgres;
+import com.branas.clean_architecture.driven.AccountDAOPostgres;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;

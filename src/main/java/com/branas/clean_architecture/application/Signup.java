@@ -2,7 +2,6 @@ package com.branas.clean_architecture.application;
 
 import com.branas.clean_architecture.driver.SignupRequestInput;
 import com.branas.clean_architecture.driver.SignupResponse;
-import com.branas.clean_architecture.resources.AccountDAO;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -15,9 +14,7 @@ public class Signup {
     }
 
     public SignupResponse execute(SignupRequestInput signupRequestInput) {
-        if(accountDAO.getAccountByEmail(signupRequestInput.email()) != null) {
-            throw new IllegalArgumentException("O email já existe");
-        }
+        accountDAO.accountAlreadyExists(signupRequestInput.email());
         if(!signupRequestInput.name().matches("[a-zA-Z]+\\s[a-zA-Z]+")) {
             throw new IllegalArgumentException("Nome inválido");
         }

@@ -192,7 +192,7 @@ class ApiTestIT {
                 .post("/signup")
                 .then()
                 .statusCode(422)
-                .body("error", is("O email já existe"));
+                .body("error", is("Já existe uma conta com o email informado"));
     }
 
     @Test
