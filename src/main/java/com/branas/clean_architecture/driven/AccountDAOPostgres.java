@@ -15,8 +15,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-@Primary
 @Service
+@Primary
 public class AccountDAOPostgres implements AccountDAO {
 
     private final DataSource dataSource;

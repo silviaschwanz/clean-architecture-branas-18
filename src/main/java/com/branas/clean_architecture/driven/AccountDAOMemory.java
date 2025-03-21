@@ -5,7 +5,6 @@ import com.branas.clean_architecture.driver.AccountResponse;
 import com.branas.clean_architecture.driver.SignupRequestInput;
 import com.branas.clean_architecture.driver.SignupResponse;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -13,7 +12,6 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-@Profile("memory")
 public class AccountDAOMemory implements AccountDAO {
 
     private List<Account> accounts;
