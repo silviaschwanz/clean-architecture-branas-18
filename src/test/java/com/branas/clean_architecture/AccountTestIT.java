@@ -1,9 +1,9 @@
 package com.branas.clean_architecture;
 
 import com.branas.clean_architecture.application.Signup;
+import com.branas.clean_architecture.driven.Account;
 import com.branas.clean_architecture.driver.SignupRequestInput;
 import com.branas.clean_architecture.driver.SignupResponse;
-import com.branas.clean_architecture.driven.AccountDAOPostgres;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -44,8 +44,8 @@ class AccountTestIT {
                 false,
                 "123"
         );
-        SignupResponse result = signup.execute(signupRequestInput);
-        assertNotNull(result.accountId);
+        Account account = signup.execute(signupRequestInput);
+        assertNotNull(account.accountId());
     }
 
     @Test

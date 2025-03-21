@@ -1,5 +1,6 @@
 package com.branas.clean_architecture.application;
 
+import com.branas.clean_architecture.driven.Account;
 import com.branas.clean_architecture.driver.AccountResponse;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ public class GetAccount {
         this.accountDAO = accountDAO;
     }
 
-    public AccountResponse execute(UUID accountId) {
+    public Account execute(UUID accountId) {
         return accountDAO.getAccountById(accountId);
     }
 

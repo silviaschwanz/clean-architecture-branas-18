@@ -1,9 +1,7 @@
 package com.branas.clean_architecture.driven;
 
 import com.branas.clean_architecture.application.AccountDAO;
-import com.branas.clean_architecture.driver.AccountResponse;
 import com.branas.clean_architecture.driver.SignupRequestInput;
-import com.branas.clean_architecture.driver.SignupResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -40,15 +38,21 @@ public class AccountDAOPostgres implements AccountDAO {
         }
     }
 
-    public AccountResponse getAccountById(UUID accountId) {
+    public Account getAccountById(UUID accountId) {
         try (Connection con = dataSource.getConnection()){
             PreparedStatement ps = con.prepareStatement("select * from account where account_id = ?");
             ps.setObject(1, accountId);
             try (ResultSet rs = ps.executeQuery();) {
-                if (rs.next()) return new AccountResponse(
+                if (rs.next()) return new Account(
                         rs.getObject("account_id", UUID.class),
+                        rs.getString("name"),
                         rs.getString("email"),
-                        rs.getString("name")
+                        rs.getString("cpf"),
+                        rs.getString("car_plate"),
+                        rs.getBoolean("is_passenger"),
+                        rs.getBoolean("is_driver"),
+                        rs.getString("password"),
+                        rs.getString("password_algorithm")
                 );
             }
         } catch (SQLException e) {
@@ -57,15 +61,21 @@ public class AccountDAOPostgres implements AccountDAO {
         throw new EntityNotFoundException("Account não encontrada com o accountId informado");
     }
 
-    public AccountResponse getAccountByEmail(String email) {
+    public Account getAccountByEmail(String email) {
         try (Connection con = dataSource.getConnection()){
             PreparedStatement ps = con.prepareStatement("select * from account where email = ?");
             ps.setString(1, email);
             try (ResultSet rs = ps.executeQuery();) {
-                if (rs.next()) return new AccountResponse(
+                if (rs.next()) return new Account(
                         rs.getObject("account_id", UUID.class),
+                        rs.getString("name"),
                         rs.getString("email"),
-                        rs.getString("name")
+                        rs.getString("cpf"),
+                        rs.getString("car_plate"),
+                        rs.getBoolean("is_passenger"),
+                        rs.getBoolean("is_driver"),
+                        rs.getString("password"),
+                        rs.getString("password_algorithm")
                 );
             }
         } catch (SQLException e) {
@@ -74,9 +84,8 @@ public class AccountDAOPostgres implements AccountDAO {
         throw new EntityNotFoundException("Account não encontrada com o email informado");
     }
 
-    public SignupResponse saveAccount(SignupRequestInput signupRequestInput) {
+    public UUID saveAccount(SignupRequestInput signupRequestInput) {
         UUID id = UUID.randomUUID();
-        String passwordAlgorithm = UUID.randomUUID().toString();
         try (Connection con = dataSource.getConnection()) {
             final PreparedStatement insertStatement = con.prepareStatement(
                     "insert into account " +
@@ -95,10 +104,9 @@ public class AccountDAOPostgres implements AccountDAO {
             if (rowsInserted == 0) {
                 throw new RuntimeException("Falha ao inserir conta, nenhuma linha foi afetada.");
             }
-            return new SignupResponse(id);
+            return id;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao salvar conta", e);
         }
     }
-
 }

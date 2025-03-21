@@ -1,6 +1,8 @@
 package com.branas.clean_architecture.application;
 
+import com.branas.clean_architecture.driven.Account;
 import com.branas.clean_architecture.driven.AccountDAOMemory;
+import com.branas.clean_architecture.driven.MailerGatewayMemory;
 import com.branas.clean_architecture.driven.PasswordService;
 import com.branas.clean_architecture.driver.SignupRequestInput;
 import com.branas.clean_architecture.driver.SignupResponse;
@@ -15,12 +17,16 @@ import static org.junit.jupiter.api.Assertions.*;
 class AccountTest {
 
     AccountDAOMemory accountDAO;
+    MailerGateway mailerGateway;
+    GetAccount getAccount;
     Signup signup;
 
     @BeforeEach
     public void setUp() {
         accountDAO = new AccountDAOMemory();
-        signup = new Signup(accountDAO);
+        mailerGateway = new MailerGatewayMemory();
+        getAccount = new GetAccount(accountDAO);
+        signup = new Signup(accountDAO, mailerGateway, getAccount);
     }
 
     @Test
@@ -35,8 +41,8 @@ class AccountTest {
                 false,
                 "123"
         );
-        SignupResponse result = signup.execute(signupRequestInput);
-        assertNotNull(result.accountId);
+        Account account = signup.execute(signupRequestInput);
+        assertNotNull(account.accountId());
     }
 
     @Test

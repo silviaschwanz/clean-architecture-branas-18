@@ -1,9 +1,7 @@
 package com.branas.clean_architecture.driven;
 
 import com.branas.clean_architecture.application.AccountDAO;
-import com.branas.clean_architecture.driver.AccountResponse;
 import com.branas.clean_architecture.driver.SignupRequestInput;
-import com.branas.clean_architecture.driver.SignupResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -28,36 +26,25 @@ public class AccountDAOMemory implements AccountDAO {
     }
 
     @Override
-    public AccountResponse getAccountById(UUID accountId) {
-        Account account = accounts.stream().filter(a -> a.accountId().equals(accountId))
+    public Account getAccountById(UUID accountId) {
+        return accounts.stream().filter(a -> a.accountId().equals(accountId))
                 .findFirst()
                 .orElseThrow(
                         () -> new EntityNotFoundException("Account não encontrada com o accountId informado"
                         ));
-        return new AccountResponse(
-                account.accountId(),
-                account.email(),
-                account.name()
-        );
     }
 
     @Override
-    public AccountResponse getAccountByEmail(String email) {
-        Account account = accounts.stream().filter(a -> a.email().equals(email))
+    public Account getAccountByEmail(String email) {
+        return accounts.stream().filter(a -> a.email().equals(email))
                 .findFirst()
                 .orElseThrow(
                         () -> new EntityNotFoundException("Account não encontrada com o email informado"
                         ));
-        return new AccountResponse(
-                account.accountId(),
-                account.email(),
-                account.name()
-        );
     }
 
     @Override
-    public SignupResponse saveAccount(SignupRequestInput signupRequestInput) {
-
+    public UUID saveAccount(SignupRequestInput signupRequestInput) {
         Account account = new Account(
                 UUID.randomUUID(),
                 signupRequestInput.name(),
@@ -70,9 +57,7 @@ public class AccountDAOMemory implements AccountDAO {
                 PasswordService.encodePassword(signupRequestInput.password())
         );
         accounts.add(account);
-        return new SignupResponse(
-                account.accountId()
-        );
+        return account.accountId();
     }
 
 }

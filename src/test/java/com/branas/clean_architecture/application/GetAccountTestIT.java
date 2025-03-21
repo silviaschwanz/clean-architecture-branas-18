@@ -2,7 +2,6 @@ package com.branas.clean_architecture.application;
 
 import com.branas.clean_architecture.ContainersConfig;
 import com.branas.clean_architecture.driven.AccountDAOPostgres;
-import com.branas.clean_architecture.driver.AccountResponse;
 import com.branas.clean_architecture.driver.SignupRequestInput;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,7 +28,6 @@ class GetAccountTestIT {
     @Autowired
     GetAccount getAccount;
 
-
     @BeforeEach
     public void setUp() {
         flyway.clean();
@@ -48,9 +46,9 @@ class GetAccountTestIT {
                 false,
                 "123"
         );
-        var accountResponse = accountDAO.saveAccount(signupRequestInput);
-        AccountResponse account = getAccount.execute(accountResponse.accountId);
-        assertEquals(accountResponse.accountId, account.accountId());
+        var accountId = accountDAO.saveAccount(signupRequestInput);
+        var account = getAccount.execute(accountId);
+        assertEquals(accountId, account.accountId());
         assertEquals("Joao Paulo", account.name());
         assertEquals("joao@gmail.com.br", account.email());
     }
