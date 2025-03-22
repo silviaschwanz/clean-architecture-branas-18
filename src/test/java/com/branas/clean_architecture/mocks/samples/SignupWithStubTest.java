@@ -1,7 +1,10 @@
-package com.branas.clean_architecture.application;
+package com.branas.clean_architecture.mocks.samples;
 
+import com.branas.clean_architecture.application.AccountDAO;
+import com.branas.clean_architecture.application.GetAccount;
+import com.branas.clean_architecture.application.MailerGateway;
+import com.branas.clean_architecture.application.Signup;
 import com.branas.clean_architecture.driver.SignupRequestInput;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -17,19 +20,14 @@ class SignupWithStubTest {
     @Mock
     AccountDAO accountDAO;
 
-    Signup signup;
-    GetAccount getAccount;
-
-    @BeforeEach
-    public void setUp() {
-        MockitoAnnotations.openMocks(this);
-        getAccount = new GetAccount(accountDAO);
-        signup = new Signup(accountDAO, mailerGateway, getAccount);
-    }
 
     @Test
     @DisplayName("Deve criar a conta de um passageiro com stub")
     void executeSignupWithStub(){
+        MockitoAnnotations.openMocks(this);
+        GetAccount getAccount = new GetAccount(accountDAO);
+        Signup signup = new Signup(accountDAO, mailerGateway, getAccount);
+
         doNothing().when(mailerGateway).send(anyString(), anyString(), anyString());
         when(accountDAO.getAccountByEmail(anyString())).thenReturn(null);
         var signupRequestInput = new SignupRequestInput(

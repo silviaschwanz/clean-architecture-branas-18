@@ -1,9 +1,11 @@
-package com.branas.clean_architecture.application;
+package com.branas.clean_architecture.mocks.samples;
 
+import com.branas.clean_architecture.application.GetAccount;
+import com.branas.clean_architecture.application.MailerGateway;
+import com.branas.clean_architecture.application.Signup;
 import com.branas.clean_architecture.driven.AccountDAOMemory;
 import com.branas.clean_architecture.driven.MailerGatewayMemory;
 import com.branas.clean_architecture.driver.SignupRequestInput;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -16,20 +18,14 @@ class SignupWithSpyTest {
     @Spy
     MailerGateway mailerGateway;
 
-    Signup signup;
-    GetAccount getAccount;
-
-    @BeforeEach
-    public void setUp() {
-        mailerGateway = Mockito.spy(new MailerGatewayMemory());
-        var accountDAO = new AccountDAOMemory();
-        getAccount = new GetAccount(accountDAO);
-        signup = new Signup(accountDAO, mailerGateway, getAccount);
-    }
-
     @Test
     @DisplayName("Deve criar a conta de um passageiro com spy")
     void executeSignupWithStub(){
+        mailerGateway = Mockito.spy(new MailerGatewayMemory());
+        var accountDAO = new AccountDAOMemory();
+        GetAccount getAccount = new GetAccount(accountDAO);
+        Signup signup = new Signup(accountDAO, mailerGateway, getAccount);
+
         String email = "john.doe" + Math.random() + "@gmail.com";
         var signupRequestInput = new SignupRequestInput(
                 "Joao Paulo",
