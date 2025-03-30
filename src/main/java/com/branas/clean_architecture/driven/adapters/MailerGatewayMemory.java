@@ -1,6 +1,6 @@
-package com.branas.clean_architecture.driven;
+package com.branas.clean_architecture.driven.adapters;
 
-import com.branas.clean_architecture.application.MailerGateway;
+import com.branas.clean_architecture.application.ports.MailerGateway;
 import org.springframework.stereotype.Service;
 
 @Service

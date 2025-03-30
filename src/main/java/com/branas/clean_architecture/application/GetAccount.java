@@ -1,7 +1,8 @@
 package com.branas.clean_architecture.application;
 
-import com.branas.clean_architecture.driven.Account;
-import com.branas.clean_architecture.driver.AccountResponse;
+import com.branas.clean_architecture.application.ports.AccountRepository;
+import com.branas.clean_architecture.domain.Account;
+import com.branas.clean_architecture.driver.AccountOutput;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -9,14 +10,23 @@ import java.util.UUID;
 @Service
 public class GetAccount {
 
-    private final AccountDAO accountDAO;
+    private final AccountRepository accountRepository;
 
-    public GetAccount(AccountDAO accountDAO) {
-        this.accountDAO = accountDAO;
+    public GetAccount(AccountRepository accountDAO) {
+        this.accountRepository = accountDAO;
     }
 
-    public Account execute(UUID accountId) {
-        return accountDAO.getAccountById(accountId);
+    public AccountOutput execute(String accountId) {
+        Account account = accountRepository.getAccountById(accountId);
+        return new AccountOutput(
+                account.getAccountId(),
+                account.getName(),
+                account.getEmail(),
+                account.getCpf(),
+                account.getCarPlate(),
+                account.isPassenger(),
+                account.isDriver()
+        );
     }
 
 }

@@ -1,52 +1,59 @@
 package com.branas.clean_architecture.driver;
 
 import com.branas.clean_architecture.application.GetAccount;
+import com.branas.clean_architecture.application.RequestRide;
 import com.branas.clean_architecture.application.Signup;
-import com.branas.clean_architecture.driven.Account;
-import com.branas.clean_architecture.driven.AccountDAOPostgres;
-import com.branas.clean_architecture.driven.MailerGatewayMemory;
+import com.branas.clean_architecture.domain.Account;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/signup")
 public class Api {
 
-    private final Signup signup;
+    @Autowired
+    Signup signup;
 
-    private final GetAccount getAccount;
+    @Autowired
+    GetAccount getAccount;
 
-    public Api(AccountDAOPostgres accountDAO, MailerGatewayMemory mailerGateway) {
-        this.getAccount = new GetAccount(accountDAO);
-        this.signup = new Signup(accountDAO, mailerGateway, getAccount);
-    }
+    @Autowired
+    RequestRide requestRide;
+
 
     @PostMapping()
-    public ResponseEntity<?> signup(@RequestBody SignupRequestInput signupRequestInput) {
+    public ResponseEntity<?> signup(@RequestBody SignupInput signupInput) {
         try {
-            Account account = signup.execute(signupRequestInput);
-            SignupResponse response = new SignupResponse(account.accountId());
+            Account account = signup.execute(signupInput);
+            SignupOutput response = new SignupOutput(account.getAccountId());
             return ResponseEntity.ok().contentType(MediaType.APPLICATION_JSON).body(response);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ResponseError(e.getMessage()));
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(new ErrorOutput(e.getMessage()));
         }
 
     }
 
     @GetMapping("/{accountId}")
-    public ResponseEntity<?> getAccount(@PathVariable UUID accountId) {
+    public ResponseEntity<?> getAccount(@PathVariable String accountId) {
         try {
-            var account = getAccount.execute(accountId);
-            var response =  new AccountResponse(account.accountId(), account.email(), account.name());
-            return ResponseEntity.ok().body(response);
+            var accountOutput = getAccount.execute(accountId);
+            return ResponseEntity.ok().body(accountOutput);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ResponseError(e.getMessage()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorOutput(e.getMessage()));
         }
 
+    }
+
+    public ResponseEntity<?> getRide(@RequestBody RideInput input) {
+        try {
+            var rideOutput = requestRide.execute(input);
+            return ResponseEntity.ok().body(rideOutput);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ErrorOutput(e.getMessage()));
+        }
     }
 
 }

@@ -1,12 +1,12 @@
 package com.branas.clean_architecture.driver;
 
-public record SignupRequestInput(
+public record AccountOutput(
+        String accountId,
         String name,
         String email,
         String cpf,
         String carPlate,
-        boolean isPassenger,
-        boolean isDriver,
-        String password
+        Boolean isPassenger,
+        Boolean isDriver
 ) {
 }

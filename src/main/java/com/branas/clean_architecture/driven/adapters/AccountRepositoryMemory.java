@@ -1,0 +1,63 @@
+package com.branas.clean_architecture.driven.adapters;
+
+import com.branas.clean_architecture.application.ports.AccountRepository;
+import com.branas.clean_architecture.domain.Account;
+import com.branas.clean_architecture.driven.PasswordService;
+import com.branas.clean_architecture.driver.SignupInput;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
+@Service
+public class AccountRepositoryMemory implements AccountRepository {
+
+    private List<Account> accounts;
+
+    public AccountRepositoryMemory() {
+        this.accounts = new ArrayList<>();
+    }
+
+    public void accountAlreadyExists(String email) {
+        boolean exists = accounts.stream().anyMatch(a -> a.getEmail().equals(email));
+        if(exists) {
+            throw new IllegalStateException("There is already an account with that email");
+        }
+    }
+
+    @Override
+    public Account getAccountById(String accountId) {
+        return accounts.stream().filter(a -> a.getAccountId().equals(accountId))
+                .findFirst()
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Account not found")
+                );
+    }
+
+    @Override
+    public Account getAccountByEmail(String email) {
+        return accounts.stream().filter(a -> a.getEmail().equals(email))
+                .findFirst()
+                .orElseThrow(
+                        () -> new EntityNotFoundException("Account not found")
+                );
+    }
+
+    @Override
+    public Account saveAccount(SignupInput signupRequestInput) {
+        Account account = Account.create(
+                signupRequestInput.name(),
+                signupRequestInput.email(),
+                signupRequestInput.cpf(),
+                signupRequestInput.carPlate(),
+                signupRequestInput.isDriver(),
+                signupRequestInput.password(),
+                PasswordService.encodePassword(signupRequestInput.password())
+        );
+        accounts.add(account);
+        return account;
+    }
+
+}

@@ -6,7 +6,6 @@ import io.restassured.http.ContentType;
 import io.restassured.response.Response;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -46,9 +45,8 @@ class ApiTestIT {
     }
 
     @Test
-    @DisplayName("Deve criar a conta de um passageiro")
-    void signup(){
-        var signupRequestInput = new SignupRequestInput(
+    void shouldSignupAccountPassanger(){
+        var signupRequestInput = new SignupInput(
                 "Joao Paulo",
                 "joao@gmail.com.br",
                 "97456321558",
@@ -70,9 +68,8 @@ class ApiTestIT {
     }
 
     @Test
-    @DisplayName("Não deve criar a conta de um passageiro com nome inválido")
-    void signupInvalidName(){
-        var signupRequestInput = new SignupRequestInput(
+    void shouldNotSignupInvalidName(){
+        var signupRequestInput = new SignupInput(
                 "joao 123",
                 "joao@gmail.com.br",
                 "97456321558",
@@ -88,13 +85,12 @@ class ApiTestIT {
                 .post("/signup")
                 .then()
                 .statusCode(422)
-                .body("error", is("Nome inválido"));
+                .body("error", is("Invalid name. Only letters and spaces are allowed"));
     }
 
     @Test
-    @DisplayName("Não deve criar a conta de um passageiro com email inválido")
-    void signupInvalidEmail(){
-        var signupRequestInput = new SignupRequestInput(
+    void shouldNotSignupInvalidEmail(){
+        var signupRequestInput = new SignupInput(
                 "joao Paulo",
                 "gmail",
                 "97456321558",
@@ -110,13 +106,12 @@ class ApiTestIT {
                 .post("/signup")
                 .then()
                 .statusCode(422)
-                .body("error", is("Email inválido"));
+                .body("error", is("Invalid email"));
     }
 
     @Test
-    @DisplayName("Não deve criar a conta de um passageiro com cpf inválido - com 10 digítos")
-    void signupInvalidCpf(){
-        var signupRequestInput = new SignupRequestInput(
+    void shouldNotSignupInvalidCpf(){
+        var signupRequestInput = new SignupInput(
                 "Joao Paulo",
                 "joao@gmail.com.br",
                 "9745632155",
@@ -132,13 +127,12 @@ class ApiTestIT {
                 .post("/signup")
                 .then()
                 .statusCode(422)
-                .body("error", is("Cpf inválido"));
+                .body("error", is("CPF is invalid lenght"));
     }
 
     @Test
-    @DisplayName("Não deve criar a conta de um motorista com placa inválido")
-    void signupInvalidCarPlate(){
-        var signupRequestInput = new SignupRequestInput(
+    void shouldNotSignupInvalidCarPlate(){
+        var signupRequestInput = new SignupInput(
                 "Joao Paulo",
                 "joao@gmail.com.br",
                 "97456321558",
@@ -154,12 +148,11 @@ class ApiTestIT {
                 .post("/signup")
                 .then()
                 .statusCode(422)
-                .body("error", is("Placa do carro inválida"));
+                .body("error", is("Invalid car plate"));
     }
 
     @Test
-    @DisplayName("Não deve criar conta de um passageiro com email duplicado")
-    void signupDuplicateAccount() {
+    void shouldNotSignupDuplicateAccount() {
         var accountUuid = UUID.randomUUID();
         try (Connection con = dataSource.getConnection()){
             PreparedStatement insertStatement = con.prepareStatement("insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver, password, password_algorithm) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
@@ -176,7 +169,7 @@ class ApiTestIT {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        var signupRequestInput = new SignupRequestInput(
+        var signupRequestInput = new SignupInput(
                 "joao",
                 "joao@gmail.com.br",
                 "97456321558",
@@ -192,12 +185,11 @@ class ApiTestIT {
                 .post("/signup")
                 .then()
                 .statusCode(422)
-                .body("error", is("Já existe uma conta com o email informado"));
+                .body("error", is("There is already an account with that email"));
     }
 
     @Test
-    @DisplayName("Deve retornar a conta de um passageiro")
-    void getAccount(){
+    void shouldGetAccount(){
         var accountUuid = UUID.randomUUID();
         try (Connection con = dataSource.getConnection()){
             PreparedStatement insertStatement = con.prepareStatement("insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver, password, password_algorithm) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");

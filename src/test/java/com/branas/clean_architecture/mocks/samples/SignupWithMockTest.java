@@ -1,12 +1,12 @@
 package com.branas.clean_architecture.mocks.samples;
 
-import com.branas.clean_architecture.application.AccountDAO;
+import com.branas.clean_architecture.application.ports.AccountRepository;
 import com.branas.clean_architecture.application.GetAccount;
 import com.branas.clean_architecture.application.Signup;
-import com.branas.clean_architecture.driven.Account;
-import com.branas.clean_architecture.driven.AccountDAOMemory;
-import com.branas.clean_architecture.driven.MailerGatewayMemory;
-import com.branas.clean_architecture.driver.SignupRequestInput;
+import com.branas.clean_architecture.domain.Account;
+import com.branas.clean_architecture.driven.adapters.AccountRepositoryMemory;
+import com.branas.clean_architecture.driven.adapters.MailerGatewayMemory;
+import com.branas.clean_architecture.driver.SignupInput;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -17,7 +17,7 @@ import static org.mockito.Mockito.*;
 class SignupWithMockTest {
 
     MailerGatewayMemory mailerMock;
-    AccountDAO accountDAO;
+    AccountRepository accountDAO;
     Signup signup;
     GetAccount getAccount;
 
@@ -25,12 +25,11 @@ class SignupWithMockTest {
     @DisplayName("Deve criar a conta de um passageiro com stub")
     void executeSignupWithStub(){
         mailerMock = Mockito.mock(MailerGatewayMemory.class);
-        accountDAO = new AccountDAOMemory();
-        getAccount = new GetAccount(accountDAO);
-        signup = new Signup(accountDAO, mailerMock, getAccount);
+        accountDAO = new AccountRepositoryMemory();
+        signup = new Signup(accountDAO, mailerMock);
 
         String email = "john.doe" + Math.random() + "@gmail.com";
-        var signupRequestInput = new SignupRequestInput(
+        var signupRequestInput = new SignupInput(
                 "Joao Paulo",
                 email,
                 "97456321558",
@@ -45,7 +44,7 @@ class SignupWithMockTest {
         }).when(mailerMock).send(eq(email), eq("Welcome!"), eq("..."));
 
         Account account = signup.execute(signupRequestInput);
-        assertNotNull(account.accountId());
+        assertNotNull(account.getAccountId());
         verify(mailerMock, times(1)).send(eq(email), eq("Welcome!"), eq("..."));
     }
 

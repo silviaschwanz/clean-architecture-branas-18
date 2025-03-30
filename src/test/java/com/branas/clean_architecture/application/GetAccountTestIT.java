@@ -1,8 +1,8 @@
 package com.branas.clean_architecture.application;
 
 import com.branas.clean_architecture.ContainersConfig;
-import com.branas.clean_architecture.driven.AccountDAOPostgres;
-import com.branas.clean_architecture.driver.SignupRequestInput;
+import com.branas.clean_architecture.driven.adapters.AccountRepositoryPostgres;
+import com.branas.clean_architecture.driver.SignupInput;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class GetAccountTestIT {
 
     @Autowired
-    AccountDAOPostgres accountDAO;
+    AccountRepositoryPostgres accountDAO;
 
     @Autowired
     private Flyway flyway;
@@ -37,7 +37,7 @@ class GetAccountTestIT {
     @Test
     @DisplayName("Deve retornar a conta de um passageiro")
     void getAccount(){
-        var signupRequestInput = new SignupRequestInput(
+        var signupRequestInput = new SignupInput(
                 "Joao Paulo",
                 "joao@gmail.com.br",
                 "97456321558",
@@ -46,9 +46,9 @@ class GetAccountTestIT {
                 false,
                 "123"
         );
-        var accountId = accountDAO.saveAccount(signupRequestInput);
-        var account = getAccount.execute(accountId);
-        assertEquals(accountId, account.accountId());
+        var accountSaved = accountDAO.saveAccount(signupRequestInput);
+        var account = getAccount.execute(accountSaved.getAccountId());
+        assertEquals(accountSaved.getAccountId(), account.accountId());
         assertEquals("Joao Paulo", account.name());
         assertEquals("joao@gmail.com.br", account.email());
     }

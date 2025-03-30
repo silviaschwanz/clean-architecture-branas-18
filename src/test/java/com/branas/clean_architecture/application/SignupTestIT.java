@@ -1,12 +1,10 @@
-package com.branas.clean_architecture;
+package com.branas.clean_architecture.application;
 
-import com.branas.clean_architecture.application.Signup;
-import com.branas.clean_architecture.driven.Account;
-import com.branas.clean_architecture.driver.SignupRequestInput;
-import com.branas.clean_architecture.driver.SignupResponse;
+import com.branas.clean_architecture.ContainersConfig;
+import com.branas.clean_architecture.domain.Account;
+import com.branas.clean_architecture.driver.SignupInput;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -18,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 @Import(ContainersConfig.class)
-class AccountTestIT {
+class SignupTestIT {
 
     @Autowired
     Signup signup;
@@ -33,9 +31,8 @@ class AccountTestIT {
     }
 
     @Test
-    @DisplayName("Deve criar a conta de um passageiro")
-    void executeSignup(){
-        var signupRequestInput = new SignupRequestInput(
+    void shouldSignupValidPassenger(){
+        var signupRequestInput = new SignupInput(
                 "Joao Paulo",
                 "joao@gmail.com.br",
                 "97456321558",
@@ -45,13 +42,12 @@ class AccountTestIT {
                 "123"
         );
         Account account = signup.execute(signupRequestInput);
-        assertNotNull(account.accountId());
+        assertNotNull(account.getAccountId());
     }
 
     @Test
-    @DisplayName("Não deve criar a conta de um passageiro com nome inválido")
-    void signupInvalidName(){
-        var signupRequestInput = new SignupRequestInput(
+    void shouldNotSignupInvalidName(){
+        var signupRequestInput = new SignupInput(
                 "joao 123",
                 "joao@gmail.com.br",
                 "97456321558",
@@ -63,13 +59,12 @@ class AccountTestIT {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             signup.execute(signupRequestInput);
         });
-        assertEquals("Nome inválido", exception.getMessage());
+        assertEquals("Invalid name. Only letters and spaces are allowed", exception.getMessage());
     }
 
     @Test
-    @DisplayName("Não deve criar a conta de um passageiro com email inválido")
-    void signupInvalidEmail(){
-        var signupRequestInput = new SignupRequestInput(
+    void shouldNotSignupInvalidEmail(){
+        var signupRequestInput = new SignupInput(
                 "joao Paulo",
                 "gmail",
                 "97456321558",
@@ -81,13 +76,12 @@ class AccountTestIT {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             signup.execute(signupRequestInput);
         });
-        assertEquals("Email inválido", exception.getMessage());
+        assertEquals("Invalid email", exception.getMessage());
     }
 
     @Test
-    @DisplayName("Não deve criar a conta de um passageiro com cpf inválido - com 10 digítos")
-    void signupInvalidCpf(){
-        var signupRequestInput = new SignupRequestInput(
+    void shouldNotSignupInvalidCpf(){
+        var signupRequestInput = new SignupInput(
                 "Joao Paulo",
                 "joao@gmail.com.br",
                 "9745632155",
@@ -99,13 +93,12 @@ class AccountTestIT {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             signup.execute(signupRequestInput);
         });
-        assertEquals("Cpf inválido", exception.getMessage());
+        assertEquals("CPF is invalid lenght", exception.getMessage());
     }
 
     @Test
-    @DisplayName("Não deve criar a conta de um motorista com placa inválido")
-    void signupInvalidCarPlate(){
-        var signupRequestInput = new SignupRequestInput(
+    void shouldNotSignupInvalidCarPlate(){
+        var signupRequestInput = new SignupInput(
                 "Joao Paulo",
                 "joao@gmail.com.br",
                 "97456321558",
@@ -117,13 +110,12 @@ class AccountTestIT {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             signup.execute(signupRequestInput);
         });
-        assertEquals("Placa do carro inválida", exception.getMessage());
+        assertEquals("Invalid car plate", exception.getMessage());
     }
 
     @Test
-    @DisplayName("Não deve criar conta de um passageiro com email duplicado")
-    void signupDuplicateAccount() {
-        var signupRequestInput = new SignupRequestInput(
+    void shouldNotSignupDuplicateAccount() {
+        var signupRequestInput = new SignupInput(
                 "Joao Paulo",
                 "joao@gmail.com.br",
                 "97456321558",
@@ -136,7 +128,7 @@ class AccountTestIT {
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {
             signup.execute(signupRequestInput);
         });
-        assertEquals("Já existe uma conta com o email informado", exception.getMessage());
+        assertEquals("There is already an account with that email", exception.getMessage());
     }
 
 }

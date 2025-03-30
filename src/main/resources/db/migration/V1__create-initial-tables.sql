@@ -13,22 +13,22 @@ CREATE TABLE account (
 CREATE TABLE ride (
     ride_id UUID not null PRIMARY KEY,
     passenger_id UUID not null,
-    driver_id UUID not null,
+    driver_id UUID,
     status VARCHAR(20) not null,
-    fare NUMERIC(18) not null,
-    from_lat NUMERIC(18) not null,
-    from_long NUMERIC(18) not null,
-    to_lat NUMERIC(18) not null,
-    to_long NUMERIC(18) not null,
-    distance NUMERIC(18),
+    fare DOUBLE PRECISION,
+    from_lat DOUBLE PRECISION not null,
+    from_long DOUBLE PRECISION not null,
+    to_lat DOUBLE PRECISION not null,
+    to_long DOUBLE PRECISION not null,
+    distance DOUBLE PRECISION,
     date TIMESTAMP not null
 );
 
 CREATE TABLE position (
     position_id UUID not null PRIMARY KEY,
     ride_id UUID not null,
-    lat NUMERIC(18) not null,
-    long NUMERIC(18) not null,
+    lat DOUBLE PRECISION not null,
+    long DOUBLE PRECISION not null,
     date TIMESTAMP not null
 );
 
