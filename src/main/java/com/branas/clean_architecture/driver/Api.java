@@ -1,8 +1,8 @@
 package com.branas.clean_architecture.driver;
 
-import com.branas.clean_architecture.application.GetAccount;
+import com.branas.clean_architecture.application.usecases.GetAccount;
 import com.branas.clean_architecture.application.RequestRide;
-import com.branas.clean_architecture.application.Signup;
+import com.branas.clean_architecture.application.usecases.Signup;
 import com.branas.clean_architecture.domain.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

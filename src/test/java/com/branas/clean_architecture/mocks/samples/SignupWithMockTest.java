@@ -1,8 +1,8 @@
 package com.branas.clean_architecture.mocks.samples;
 
 import com.branas.clean_architecture.application.ports.AccountRepository;
-import com.branas.clean_architecture.application.GetAccount;
-import com.branas.clean_architecture.application.Signup;
+import com.branas.clean_architecture.application.usecases.GetAccount;
+import com.branas.clean_architecture.application.usecases.Signup;
 import com.branas.clean_architecture.domain.Account;
 import com.branas.clean_architecture.driven.adapters.AccountRepositoryMemory;
 import com.branas.clean_architecture.driven.adapters.MailerGatewayMemory;

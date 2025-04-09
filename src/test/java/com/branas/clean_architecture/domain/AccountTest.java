@@ -76,6 +76,19 @@ class AccountTest {
     }
 
     @Test
+    void shouldThrowExceptionForInvalidName(){
+        assertThrows(RuntimeException.class, () -> Account.create(
+                "joao 123",
+                "invalid-email",
+                "12345678901",
+                "ABC1234",
+                true,
+                "StrongPassword123",
+                "bcrypt"
+        ));
+    }
+
+    @Test
     void shouldThrowExceptionForInvalidEmail() {
         assertThrows(RuntimeException.class, () -> Account.create(
                 "John Doe",
@@ -113,4 +126,37 @@ class AccountTest {
                 "bcrypt"
         ));
     }
+
+    @Test
+    void shouldThrowExceptionForInvalidLenghtCpf(){
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            Account.create(
+                    "John Doe",
+                    "john.doe@example.com",
+                    "9745632155",
+                    "",
+                    true,
+                    "StrongPassword123",
+                    "bcrypt"
+            );
+        });
+        assertEquals("CPF is invalid lenght", exception.getMessage());
+    }
+
+    @Test
+    void shouldNotSignupInvalidCarPlate(){
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            Account.create(
+                    "John Doe",
+                    "john.doe@example.com",
+                    "97456321558",
+                    "A23",
+                    true,
+                    "StrongPassword123",
+                    "bcrypt"
+            );
+        });
+        assertEquals("Invalid car plate", exception.getMessage());
+    }
+
 }

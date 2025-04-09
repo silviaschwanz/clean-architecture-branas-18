@@ -1,6 +1,7 @@
 package com.branas.clean_architecture.application;
 
 import com.branas.clean_architecture.ContainersConfig;
+import com.branas.clean_architecture.application.usecases.GetAccount;
 import com.branas.clean_architecture.driven.adapters.AccountRepositoryPostgres;
 import com.branas.clean_architecture.driver.SignupInput;
 import org.flywaydb.core.Flyway;

@@ -1,6 +1,7 @@
 package com.branas.clean_architecture.application;
 
 import com.branas.clean_architecture.ContainersConfig;
+import com.branas.clean_architecture.application.usecases.Signup;
 import com.branas.clean_architecture.domain.Account;
 import com.branas.clean_architecture.driver.SignupInput;
 import org.flywaydb.core.Flyway;

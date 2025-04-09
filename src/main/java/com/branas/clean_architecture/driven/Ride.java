@@ -15,4 +15,7 @@ public record Ride(
         double distance,
         LocalDateTime date
 ) {
+
+
+
 }

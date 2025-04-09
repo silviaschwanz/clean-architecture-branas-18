@@ -1,4 +1,4 @@
-package com.branas.clean_architecture.application;
+package com.branas.clean_architecture.application.usecases;
 
 import com.branas.clean_architecture.application.ports.AccountRepository;
 import com.branas.clean_architecture.application.ports.MailerGateway;
@@ -20,6 +20,7 @@ public class Signup {
         this.mailerGateway = mailerGateway;
     }
 
+    // Use Cases orquestram entidades e recursos
     public Account execute(SignupInput signupRequestInput) {
         accountDAO.accountAlreadyExists(signupRequestInput.email());
         Account account = accountDAO.saveAccount(signupRequestInput);

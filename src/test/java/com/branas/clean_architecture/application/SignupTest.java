@@ -1,6 +1,7 @@
 package com.branas.clean_architecture.application;
 
 import com.branas.clean_architecture.application.ports.MailerGateway;
+import com.branas.clean_architecture.application.usecases.Signup;
 import com.branas.clean_architecture.domain.Account;
 import com.branas.clean_architecture.driven.adapters.AccountRepositoryMemory;
 import com.branas.clean_architecture.driven.adapters.MailerGatewayMemory;
@@ -40,74 +41,6 @@ class SignupTest {
         );
         Account account = signup.execute(signupRequestInput);
         assertNotNull(account.getAccountId());
-    }
-
-    @Test
-    void shouldNotSignupInvalidName(){
-        var signupRequestInput = new SignupInput(
-                "joao 123",
-                "joao@gmail.com.br",
-                "97456321558",
-                "2568-236",
-                true,
-                false,
-                "123"
-        );
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            signup.execute(signupRequestInput);
-        });
-        assertEquals("Invalid name. Only letters and spaces are allowed", exception.getMessage());
-    }
-
-    @Test
-    void shouldNotSignupInvalidEmail(){
-        var signupRequestInput = new SignupInput(
-                "joao Paulo",
-                "gmail",
-                "97456321558",
-                "2568-236",
-                true,
-                false,
-                "123"
-        );
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            signup.execute(signupRequestInput);
-        });
-        assertEquals("Invalid email", exception.getMessage());
-    }
-
-    @Test
-    void shouldNotSignupInvalidCpf(){
-        var signupRequestInput = new SignupInput(
-                "Joao Paulo",
-                "joao@gmail.com.br",
-                "9745632155",
-                "",
-                true,
-                false,
-                "123"
-        );
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            signup.execute(signupRequestInput);
-        });
-        assertEquals("CPF is invalid lenght", exception.getMessage());
-    }
-
-    @Test
-    void shouldNotSignupInvalidCarPlate(){
-        var signupRequestInput = new SignupInput(
-                "Joao Paulo",
-                "joao@gmail.com.br",
-                "97456321558",
-                "A23",
-                false,
-                true,
-                "123"
-        );
-        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
-            signup.execute(signupRequestInput);
-        });
-        assertEquals("Invalid car plate", exception.getMessage());
     }
 
     @Test

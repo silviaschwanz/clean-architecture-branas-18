@@ -1,11 +1,9 @@
-package com.branas.clean_architecture.application;
+package com.branas.clean_architecture.application.usecases;
 
 import com.branas.clean_architecture.application.ports.AccountRepository;
 import com.branas.clean_architecture.domain.Account;
 import com.branas.clean_architecture.driver.AccountOutput;
 import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 public class GetAccount {

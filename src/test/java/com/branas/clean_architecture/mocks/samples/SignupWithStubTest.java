@@ -1,9 +1,8 @@
 package com.branas.clean_architecture.mocks.samples;
 
 import com.branas.clean_architecture.application.ports.AccountRepository;
-import com.branas.clean_architecture.application.GetAccount;
 import com.branas.clean_architecture.application.ports.MailerGateway;
-import com.branas.clean_architecture.application.Signup;
+import com.branas.clean_architecture.application.usecases.Signup;
 import com.branas.clean_architecture.driver.SignupInput;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
