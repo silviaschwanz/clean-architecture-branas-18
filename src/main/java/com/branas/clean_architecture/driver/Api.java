@@ -3,7 +3,7 @@ package com.branas.clean_architecture.driver;
 import com.branas.clean_architecture.application.usecases.GetAccount;
 import com.branas.clean_architecture.application.RequestRide;
 import com.branas.clean_architecture.application.usecases.Signup;
-import com.branas.clean_architecture.domain.Account;
+import com.branas.clean_architecture.domain.account.Account;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

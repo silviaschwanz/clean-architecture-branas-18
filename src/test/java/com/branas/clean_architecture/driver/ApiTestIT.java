@@ -1,6 +1,8 @@
 package com.branas.clean_architecture.driver;
 
 import com.branas.clean_architecture.ContainersConfig;
+import com.branas.clean_architecture.application.ports.AccountRepository;
+import com.branas.clean_architecture.domain.account.Account;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -12,12 +14,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.UUID;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.CoreMatchers.is;
@@ -32,7 +28,7 @@ class ApiTestIT {
     int port;
 
     @Autowired
-    DataSource dataSource;
+    AccountRepository accountRepository;
 
     @Autowired
     private Flyway flyway;
@@ -50,7 +46,7 @@ class ApiTestIT {
                 "Joao Paulo",
                 "joao@gmail.com.br",
                 "97456321558",
-                "2568-236",
+                "ABC1234",
                 true,
                 false,
                 "123"
@@ -73,7 +69,7 @@ class ApiTestIT {
                 "joao 123",
                 "joao@gmail.com.br",
                 "97456321558",
-                "2568-236",
+                "ABC1234",
                 true,
                 false,
                 "123"
@@ -153,22 +149,16 @@ class ApiTestIT {
 
     @Test
     void shouldNotSignupDuplicateAccount() {
-        var accountUuid = UUID.randomUUID();
-        try (Connection con = dataSource.getConnection()){
-            PreparedStatement insertStatement = con.prepareStatement("insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver, password, password_algorithm) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            insertStatement.setObject(1, accountUuid, java.sql.Types.OTHER);
-            insertStatement.setString(2, "joao");
-            insertStatement.setString(3, "joao@gmail.com.br");
-            insertStatement.setString(4, "97456321558");
-            insertStatement.setString(5, "0");
-            insertStatement.setBoolean(6, true);
-            insertStatement.setBoolean(7, false);
-            insertStatement.setString(8, "1236");
-            insertStatement.setString(9, "dfdklfjkdsljfklsdajfkldjsf");
-            insertStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        accountRepository.saveAccount(
+                Account.create(
+                        "Joao Paulo",
+                        "joao@gmail.com.br",
+                        "97456321558",
+                        "ABC1234",
+                        true,
+                        "123"
+                )
+        );
         var signupRequestInput = new SignupInput(
                 "joao",
                 "joao@gmail.com.br",
@@ -190,30 +180,26 @@ class ApiTestIT {
 
     @Test
     void shouldGetAccount(){
-        var accountUuid = UUID.randomUUID();
-        try (Connection con = dataSource.getConnection()){
-            PreparedStatement insertStatement = con.prepareStatement("insert into account (account_id, name, email, cpf, car_plate, is_passenger, is_driver, password, password_algorithm) values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            insertStatement.setObject(1, accountUuid, java.sql.Types.OTHER);
-            insertStatement.setString(2, "joao");
-            insertStatement.setString(3, "joao@gmail.com.br");
-            insertStatement.setString(4, "97456321558");
-            insertStatement.setString(5, "0");
-            insertStatement.setBoolean(6, true);
-            insertStatement.setBoolean(7, false);
-            insertStatement.setString(8, "1236");
-            insertStatement.setString(9, "dfdklfjkdsljfklsdajfkldjsf");
-            insertStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        var accountSaved = accountRepository.saveAccount(
+                Account.create(
+                        "Joao Paulo",
+                        "joao@gmail.com.br",
+                        "97456321558",
+                        "ABC1234",
+                        true,
+                        "123"
+                )
+        );
+        var account = accountRepository.getAccountByEmail(accountSaved.getEmail());
+
         given()
                 .contentType(ContentType.JSON)
                 .when()
-                .get("/signup/" + accountUuid)
+                .get("/signup/" + account.getAccountId())
                 .then()
                 .statusCode(200)
-                .body("name", is("joao"))
-                .body("accountId", is(accountUuid.toString()))
+                .body("name", is("Joao Paulo"))
+                .body("accountId", is(account.getAccountId()))
                 .body("email", is("joao@gmail.com.br"));
     }
 

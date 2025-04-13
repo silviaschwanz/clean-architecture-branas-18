@@ -1,17 +1,15 @@
 package com.branas.clean_architecture.application.ports;
 
-import com.branas.clean_architecture.driven.Ride;
-import com.branas.clean_architecture.driver.RideInput;
+import com.branas.clean_architecture.domain.ride.Ride;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface RideRepository {
 
-    Ride getRideById(UUID rideId);
+    Ride getRideById(String rideId);
 
-    List<Ride> getRidesByPassanger(UUID passengerId);
+    List<Ride> getRidesByPassanger(String passengerId);
 
-    UUID saveRide(RideInput rideInput);
+    Ride saveRide(Ride ride);
 
 }

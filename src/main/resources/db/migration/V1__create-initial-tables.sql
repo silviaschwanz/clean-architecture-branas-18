@@ -6,7 +6,6 @@ CREATE TABLE account (
     car_plate VARCHAR(254),
     is_passenger boolean not null,
     is_driver boolean not null,
-    password VARCHAR(254) not null,
     password_algorithm VARCHAR(254) not null
 );
 

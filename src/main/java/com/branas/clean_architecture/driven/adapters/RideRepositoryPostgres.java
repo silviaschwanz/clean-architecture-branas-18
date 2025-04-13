@@ -1,36 +1,35 @@
-package com.branas.clean_architecture.driven;
+package com.branas.clean_architecture.driven.adapters;
 
 import com.branas.clean_architecture.application.ports.RideRepository;
-import com.branas.clean_architecture.driver.RideInput;
+import com.branas.clean_architecture.domain.ride.Ride;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service
 @Primary
-public class RideDAOPostgres implements RideRepository {
+public class RideRepositoryPostgres implements RideRepository {
 
     private final DataSource dataSource;
 
-    public RideDAOPostgres(DataSource dataSource) {
+    public RideRepositoryPostgres(DataSource dataSource) {
         this.dataSource = dataSource;
     }
 
 
     @Override
-    public Ride getRideById(UUID rideId) {
+    public Ride getRideById(String rideId) {
         try (Connection con = dataSource.getConnection()){
             PreparedStatement ps = con.prepareStatement("select * from ride where ride_id = ?");
-            ps.setObject(1, rideId);
+            ps.setObject(1, UUID.fromString(rideId));
             try (ResultSet rs = ps.executeQuery();) {
-                if (rs.next()) return new Ride(
+                if (rs.next()) return Ride.restore(
                         rs.getObject("ride_id", UUID.class).toString(),
                         rs.getObject("passengerId", UUID.class).toString(),
                         rs.getObject("driver_id", UUID.class).toString(),
@@ -51,14 +50,14 @@ public class RideDAOPostgres implements RideRepository {
     }
 
     @Override
-    public List<Ride> getRidesByPassanger(UUID passengerId) {
+    public List<Ride> getRidesByPassanger(String passengerId) {
         List<Ride> rides = new ArrayList<>();
         try (Connection con = dataSource.getConnection()){
             PreparedStatement ps = con.prepareStatement("select * from ride where passengerId = ?");
-            ps.setObject(1, passengerId);
+            ps.setObject(1, UUID.fromString(passengerId));
             try (ResultSet rs = ps.executeQuery();) {
                 while (rs.next()) {
-                    rides.add(new Ride(
+                    rides.add(Ride.restore(
                                     rs.getObject("ride_id", UUID.class).toString(),
                                     rs.getObject("passengerId", UUID.class).toString(),
                                     rs.getObject("driver_id", UUID.class).toString(),
@@ -81,29 +80,28 @@ public class RideDAOPostgres implements RideRepository {
     }
 
     @Override
-    public UUID saveRide(RideInput rideInput) {
-        UUID id = UUID.randomUUID();
+    public Ride saveRide(Ride ride) {
         try (Connection con = dataSource.getConnection()) {
             final PreparedStatement insertStatement = con.prepareStatement(
                     "insert into ride " +
-                            "(ride_id, passengerId, driver_id, status, fare, from_lat, from_long, to_lat, to_long, distance, date) " +
+                            "(ride_id, passenger_id, driver_id, status, fare, from_lat, from_long, to_lat, to_long, distance, date) " +
                             "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            insertStatement.setObject(1, id);
-            insertStatement.setObject(2, rideInput.passengerId());
+            insertStatement.setObject(1, UUID.fromString(ride.getRideId()));
+            insertStatement.setObject(2, UUID.fromString(ride.getPassengerId()));
             insertStatement.setObject(3, null);
-            insertStatement.setString(4, Status.SOLICITADA.toString());
+            insertStatement.setString(4, ride.getStatus());
             insertStatement.setDouble(5, 0);
-            insertStatement.setDouble(6, rideInput.from().latitude());
-            insertStatement.setDouble(7, rideInput.from().longitude());
-            insertStatement.setDouble(8, rideInput.to().latitude());
-            insertStatement.setDouble(9, rideInput.to().longitude());
+            insertStatement.setDouble(6, ride.getFromLatitude());
+            insertStatement.setDouble(7, ride.getFromLongitude());
+            insertStatement.setDouble(8, ride.getToLatitude());
+            insertStatement.setDouble(9, ride.getToLongitude());
             insertStatement.setDouble(10,0);
-            insertStatement.setTimestamp(1, Timestamp.valueOf(LocalDateTime.now()));
+            insertStatement.setTimestamp(11, Timestamp.valueOf(ride.getDate()));
             int rowsInserted = insertStatement.executeUpdate();
             if (rowsInserted == 0) {
                 throw new RuntimeException("Falha ao inserir conta, nenhuma linha foi afetada.");
             }
-            return id;
+            return ride;
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao salvar conta", e);
         }

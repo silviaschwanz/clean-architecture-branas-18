@@ -2,7 +2,7 @@ package com.branas.clean_architecture.application;
 
 import com.branas.clean_architecture.application.ports.MailerGateway;
 import com.branas.clean_architecture.application.usecases.Signup;
-import com.branas.clean_architecture.domain.Account;
+import com.branas.clean_architecture.domain.account.Account;
 import com.branas.clean_architecture.driven.adapters.AccountRepositoryMemory;
 import com.branas.clean_architecture.driven.adapters.MailerGatewayMemory;
 import com.branas.clean_architecture.driver.SignupInput;

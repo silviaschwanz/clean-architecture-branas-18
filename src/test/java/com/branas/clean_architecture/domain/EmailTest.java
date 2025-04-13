@@ -1,5 +1,6 @@
 package com.branas.clean_architecture.domain;
 
+import com.branas.clean_architecture.domain.account.Email;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

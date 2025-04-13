@@ -1,4 +1,4 @@
-package com.branas.clean_architecture.domain;
+package com.branas.clean_architecture.domain.account;
 
 import java.util.UUID;
 
@@ -11,7 +11,6 @@ public class Account {
     private Boolean isDriver;
     private CarPlate carPlate;
     private Password password;
-    private String passwordAlgorithm;
 
 
     // Design Pattern - Facade
@@ -22,15 +21,13 @@ public class Account {
             String cpf,
             String carPlate,
             Boolean isDriver,
-            String password,
-            String passwordAlgorithm
+            String password
     ) {
         this.accountId = UUID.randomUUID();
         this.name = new Name(name);
         this.email = new Email(email);
         this.cpf = new Cpf(cpf);
         this.password = new Password(password);
-        this.passwordAlgorithm = passwordAlgorithm;
         if(isDriver) this.carPlate = new CarPlate(carPlate);
         this.isDriver = isDriver;
     }
@@ -58,8 +55,7 @@ public class Account {
             String cpf,
             String carPlate,
             Boolean isDriver,
-            String password,
-            String passwordAlgorithm
+            String password
     ) {
         return new Account(
                 name,
@@ -67,8 +63,7 @@ public class Account {
                 cpf,
                 carPlate,
                 isDriver,
-                password,
-                passwordAlgorithm
+                password
         );
     }
 
@@ -122,8 +117,8 @@ public class Account {
         return password.getValue();
     }
 
-    public String getPasswordAlgorithm() {
-        return passwordAlgorithm;
+    public boolean passwordMatch(String rawPassword, String encodedPassword) {
+        return password.matches(rawPassword, encodedPassword);
     }
 
 }

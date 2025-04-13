@@ -1,5 +1,6 @@
 package com.branas.clean_architecture.domain;
 
+import com.branas.clean_architecture.domain.account.Cpf;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 

@@ -1,4 +1,4 @@
-package com.branas.clean_architecture.domain;
+package com.branas.clean_architecture.domain.account;
 
 public class Email {
 

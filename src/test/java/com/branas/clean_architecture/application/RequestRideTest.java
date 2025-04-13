@@ -2,12 +2,12 @@ package com.branas.clean_architecture.application;
 
 import com.branas.clean_architecture.ContainersConfig;
 import com.branas.clean_architecture.application.usecases.GetAccount;
+import com.branas.clean_architecture.application.usecases.Signup;
 import com.branas.clean_architecture.domain.account.Account;
 import com.branas.clean_architecture.driven.adapters.AccountRepositoryPostgres;
-import com.branas.clean_architecture.driver.SignupInput;
+import com.branas.clean_architecture.driver.RideInput;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,13 +19,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @SpringBootTest
 @ActiveProfiles("test")
 @Import(ContainersConfig.class)
-class GetAccountTestIT {
+class RequestRideTest {
 
     @Autowired
-    AccountRepositoryPostgres accountDAO;
+    AccountRepositoryPostgres accountRepository;
 
     @Autowired
     private Flyway flyway;
+
+    @Autowired
+    RequestRide requestRide;
+
+    @Autowired
+    Signup signup;
 
     @Autowired
     GetAccount getAccount;
@@ -37,21 +43,26 @@ class GetAccountTestIT {
     }
 
     @Test
-    void shouldGetAccount(){
-        var accountSaved = accountDAO.saveAccount(
+    void shouldRequestRide(){
+        var account = accountRepository.saveAccount(
                 Account.create(
                         "Joao Paulo",
                         "joao@gmail.com.br",
                         "97456321558",
                         "ABC1234",
-                        true,
+                        false,
                         "123"
                 )
         );
-        var account = getAccount.execute(accountSaved.getAccountId());
-        assertEquals(accountSaved.getAccountId(), account.accountId());
-        assertEquals("Joao Paulo", account.name());
-        assertEquals("joao@gmail.com.br", account.email());
+        var rideInput = new RideInput(
+                account.getAccountId(),
+                -27.584905257808835,
+                -48.545022195325124,
+                -27.496887588317275,
+                -48.522234807851476
+        );
+        var rideOutput = requestRide.execute(rideInput);
+        assertEquals(account.getAccountId(), rideOutput.passengerId());
     }
 
 }

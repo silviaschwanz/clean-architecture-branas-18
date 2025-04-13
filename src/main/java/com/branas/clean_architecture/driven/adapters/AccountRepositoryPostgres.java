@@ -1,9 +1,7 @@
 package com.branas.clean_architecture.driven.adapters;
 
 import com.branas.clean_architecture.application.ports.AccountRepository;
-import com.branas.clean_architecture.domain.Account;
-import com.branas.clean_architecture.driven.PasswordService;
-import com.branas.clean_architecture.driver.SignupInput;
+import com.branas.clean_architecture.domain.account.Account;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -80,21 +78,12 @@ public class AccountRepositoryPostgres implements AccountRepository {
         throw new EntityNotFoundException("Account not found");
     }
 
-    public Account saveAccount(SignupInput signupRequestInput) {
-        Account account = Account.create(
-                signupRequestInput.name(),
-                signupRequestInput.email(),
-                signupRequestInput.cpf(),
-                signupRequestInput.carPlate(),
-                signupRequestInput.isDriver(),
-                signupRequestInput.password(),
-                PasswordService.encodePassword(signupRequestInput.password())
-        );
+    public Account saveAccount(Account account) {
         try (Connection con = dataSource.getConnection()) {
             final PreparedStatement insertStatement = con.prepareStatement(
                     "insert into account " +
-                            "(account_id, name, email, cpf, car_plate, is_passenger, is_driver, password, password_algorithm)" +
-                            " values (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                            "(account_id, name, email, cpf, car_plate, is_passenger, is_driver, password_algorithm)" +
+                            " values (?, ?, ?, ?, ?, ?, ?, ?)");
             insertStatement.setObject(1, UUID.fromString(account.getAccountId()));
             insertStatement.setString(2, account.getName());
             insertStatement.setString(3, account.getEmail());
@@ -103,7 +92,6 @@ public class AccountRepositoryPostgres implements AccountRepository {
             insertStatement.setBoolean(6, account.isPassenger());
             insertStatement.setBoolean(7, account.isDriver());
             insertStatement.setString(8, account.getPassword());
-            insertStatement.setString(9, account.getPasswordAlgorithm());
             int rowsInserted = insertStatement.executeUpdate();
             if (rowsInserted == 0) {
                 throw new RuntimeException("Failed to insert account, no rows affected");

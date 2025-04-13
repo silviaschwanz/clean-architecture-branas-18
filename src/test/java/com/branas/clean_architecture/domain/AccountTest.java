@@ -1,5 +1,6 @@
 package com.branas.clean_architecture.domain;
 
+import com.branas.clean_architecture.domain.account.Account;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -16,10 +17,8 @@ class AccountTest {
                 "97456321558",
                 "ABC1234",
                 true,
-                "StrongPassword123",
-                "bcrypt"
+                "StrongPassword123"
         );
-
         assertNotNull(account.getAccountId());
         assertEquals("John Doe", account.getName());
         assertEquals("john.doe@example.com", account.getEmail());
@@ -27,8 +26,7 @@ class AccountTest {
         assertEquals("ABC1234", account.getCarPlate());
         assertFalse(account.isPassenger());
         assertTrue(account.isDriver());
-        assertEquals("StrongPassword123", account.getPassword());
-        assertEquals("bcrypt", account.getPasswordAlgorithm());
+        assertTrue(account.passwordMatch("StrongPassword123", account.getPassword()));
     }
 
     @Test
@@ -39,10 +37,8 @@ class AccountTest {
                 "97456321558",
                 null,
                 false,
-                "StrongPassword123",
-                "bcrypt"
+                "StrongPassword123"
         );
-
         assertNotNull(account.getAccountId());
         assertEquals("John Doe", account.getName());
         assertEquals("john.doe@example.com", account.getEmail());
@@ -50,8 +46,7 @@ class AccountTest {
         assertEquals("", account.getCarPlate());
         assertTrue(account.isPassenger());
         assertFalse(account.isDriver());
-        assertEquals("StrongPassword123", account.getPassword());
-        assertEquals("bcrypt", account.getPasswordAlgorithm());
+        assertTrue(account.passwordMatch("StrongPassword123", account.getPassword()));
     }
 
     @Test
@@ -83,8 +78,7 @@ class AccountTest {
                 "12345678901",
                 "ABC1234",
                 true,
-                "StrongPassword123",
-                "bcrypt"
+                "StrongPassword123"
         ));
     }
 
@@ -96,8 +90,7 @@ class AccountTest {
                 "12345678901",
                 "ABC1234",
                 true,
-                "StrongPassword123",
-                "bcrypt"
+                "StrongPassword123"
         ));
     }
 
@@ -109,8 +102,7 @@ class AccountTest {
                 "invalid-cpf",
                 "ABC1234",
                 true,
-                "StrongPassword123",
-                "bcrypt"
+                "StrongPassword123"
         ));
     }
 
@@ -122,8 +114,7 @@ class AccountTest {
                 "12345678901",
                 "INVALID",
                 true,
-                "StrongPassword123",
-                "bcrypt"
+                "StrongPassword123"
         ));
     }
 
@@ -136,8 +127,7 @@ class AccountTest {
                     "9745632155",
                     "",
                     true,
-                    "StrongPassword123",
-                    "bcrypt"
+                    "StrongPassword123"
             );
         });
         assertEquals("CPF is invalid lenght", exception.getMessage());
@@ -152,8 +142,7 @@ class AccountTest {
                     "97456321558",
                     "A23",
                     true,
-                    "StrongPassword123",
-                    "bcrypt"
+                    "StrongPassword123"
             );
         });
         assertEquals("Invalid car plate", exception.getMessage());
