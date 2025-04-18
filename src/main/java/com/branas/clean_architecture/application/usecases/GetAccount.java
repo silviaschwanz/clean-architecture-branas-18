@@ -2,7 +2,7 @@ package com.branas.clean_architecture.application.usecases;
 
 import com.branas.clean_architecture.application.ports.AccountRepository;
 import com.branas.clean_architecture.domain.account.Account;
-import com.branas.clean_architecture.driver.AccountOutput;
+import com.branas.clean_architecture.infra.controller.AccountOutput;
 import org.springframework.stereotype.Service;
 
 @Service

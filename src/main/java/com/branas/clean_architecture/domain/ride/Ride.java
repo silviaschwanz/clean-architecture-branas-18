@@ -36,7 +36,6 @@ public class Ride {
     private Ride(
             String rideId,
             String passengerId,
-            String driverId,
             String status,
             double fare,
             double fromLatitude,
@@ -48,7 +47,6 @@ public class Ride {
     ) {
         this.rideId = UUID.fromString(rideId);
         this.passengerId = UUID.fromString(passengerId);
-        this.driverId = UUID.fromString(driverId);
         this.status = status;
         this.fare = fare;
         this.from = new Coordinates(fromLatitude, fromLongitude);
@@ -68,7 +66,7 @@ public class Ride {
         return new Ride(
                 UUID.randomUUID().toString(),
                 passengerId,
-                "requested",
+                Status.REQUESTED.toString(),
                 fromLatitude,
                 fromLongitude,
                 toLatitude,
@@ -80,7 +78,6 @@ public class Ride {
     public static Ride restore(
             String rideId,
             String passengerId,
-            String driverId,
             String status,
             double fare,
             double fromLatitude,
@@ -93,7 +90,6 @@ public class Ride {
         return new Ride(
                 rideId,
                 passengerId,
-                driverId,
                 status,
                 fare,
                 fromLatitude,

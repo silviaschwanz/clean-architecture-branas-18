@@ -1,4 +1,4 @@
-package com.branas.clean_architecture.driven.adapters;
+package com.branas.clean_architecture.infra.repository;
 
 import com.branas.clean_architecture.application.ports.RideRepository;
 import com.branas.clean_architecture.domain.ride.Ride;
@@ -31,8 +31,7 @@ public class RideRepositoryPostgres implements RideRepository {
             try (ResultSet rs = ps.executeQuery();) {
                 if (rs.next()) return Ride.restore(
                         rs.getObject("ride_id", UUID.class).toString(),
-                        rs.getObject("passengerId", UUID.class).toString(),
-                        rs.getObject("driver_id", UUID.class).toString(),
+                        rs.getObject("passenger_id", UUID.class).toString(),
                         rs.getString("status"),
                         rs.getDouble("fare"),
                         rs.getDouble("from_lat"),
@@ -44,9 +43,9 @@ public class RideRepositoryPostgres implements RideRepository {
                 );
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao buscar a corrida pelo id: " + rideId, e);
+            throw new RuntimeException("Error get ride id: " + rideId, e);
         }
-        throw new EntityNotFoundException("Corrida não encontrada com o rideId informado");
+        throw new EntityNotFoundException("Ride not found");
     }
 
     @Override
@@ -59,8 +58,7 @@ public class RideRepositoryPostgres implements RideRepository {
                 while (rs.next()) {
                     rides.add(Ride.restore(
                                     rs.getObject("ride_id", UUID.class).toString(),
-                                    rs.getObject("passengerId", UUID.class).toString(),
-                                    rs.getObject("driver_id", UUID.class).toString(),
+                                    rs.getObject("passenger_id", UUID.class).toString(),
                                     rs.getString("status"),
                                     rs.getDouble("fare"),
                                     rs.getDouble("from_lat"),
@@ -74,7 +72,7 @@ public class RideRepositoryPostgres implements RideRepository {
                 }
             }
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao buscar corridas para o passageiro ID: " + passengerId, e);
+            throw new RuntimeException("Error get ride passenger id: " + passengerId, e);
         }
         return rides;
     }
@@ -99,11 +97,11 @@ public class RideRepositoryPostgres implements RideRepository {
             insertStatement.setTimestamp(11, Timestamp.valueOf(ride.getDate()));
             int rowsInserted = insertStatement.executeUpdate();
             if (rowsInserted == 0) {
-                throw new RuntimeException("Falha ao inserir conta, nenhuma linha foi afetada.");
+                throw new RuntimeException("Error saving account, no lines were affected.");
             }
             return ride;
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao salvar conta", e);
+            throw new RuntimeException("Error saving account", e);
         }
     }
 }

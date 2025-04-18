@@ -2,9 +2,9 @@ package com.branas.clean_architecture.mocks.samples;
 
 import com.branas.clean_architecture.application.ports.MailerGateway;
 import com.branas.clean_architecture.application.usecases.Signup;
-import com.branas.clean_architecture.driven.adapters.AccountRepositoryMemory;
-import com.branas.clean_architecture.driven.adapters.MailerGatewayMemory;
-import com.branas.clean_architecture.driver.SignupInput;
+import com.branas.clean_architecture.infra.repository.AccountRepositoryMemory;
+import com.branas.clean_architecture.infra.gateway.MailerGatewayMemory;
+import com.branas.clean_architecture.infra.controller.SignupInput;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

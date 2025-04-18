@@ -1,6 +1,5 @@
-package com.branas.clean_architecture.domain;
+package com.branas.clean_architecture.domain.account;
 
-import com.branas.clean_architecture.domain.account.Account;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;

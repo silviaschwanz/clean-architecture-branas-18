@@ -3,6 +3,7 @@ package com.branas.clean_architecture.driver;
 import com.branas.clean_architecture.ContainersConfig;
 import com.branas.clean_architecture.application.ports.AccountRepository;
 import com.branas.clean_architecture.domain.account.Account;
+import com.branas.clean_architecture.infra.controller.SignupInput;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;

@@ -3,9 +3,10 @@ package com.branas.clean_architecture.application;
 import com.branas.clean_architecture.application.ports.MailerGateway;
 import com.branas.clean_architecture.application.usecases.Signup;
 import com.branas.clean_architecture.domain.account.Account;
-import com.branas.clean_architecture.driven.adapters.AccountRepositoryMemory;
-import com.branas.clean_architecture.driven.adapters.MailerGatewayMemory;
-import com.branas.clean_architecture.driver.SignupInput;
+import com.branas.clean_architecture.infra.controller.SignupOutput;
+import com.branas.clean_architecture.infra.repository.AccountRepositoryMemory;
+import com.branas.clean_architecture.infra.gateway.MailerGatewayMemory;
+import com.branas.clean_architecture.infra.controller.SignupInput;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,8 +40,8 @@ class SignupTest {
                 false,
                 "123"
         );
-        Account account = signup.execute(signupRequestInput);
-        assertNotNull(account.getAccountId());
+        SignupOutput response = signup.execute(signupRequestInput);
+        assertNotNull(response.accountId);
     }
 
     @Test

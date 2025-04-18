@@ -3,10 +3,10 @@ package com.branas.clean_architecture.mocks.samples;
 import com.branas.clean_architecture.application.ports.AccountRepository;
 import com.branas.clean_architecture.application.usecases.GetAccount;
 import com.branas.clean_architecture.application.usecases.Signup;
-import com.branas.clean_architecture.domain.account.Account;
-import com.branas.clean_architecture.driven.adapters.AccountRepositoryMemory;
-import com.branas.clean_architecture.driven.adapters.MailerGatewayMemory;
-import com.branas.clean_architecture.driver.SignupInput;
+import com.branas.clean_architecture.infra.controller.SignupInput;
+import com.branas.clean_architecture.infra.controller.SignupOutput;
+import com.branas.clean_architecture.infra.gateway.MailerGatewayMemory;
+import com.branas.clean_architecture.infra.repository.AccountRepositoryMemory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -43,8 +43,8 @@ class SignupWithMockTest {
             return null;
         }).when(mailerMock).send(eq(email), eq("Welcome!"), eq("..."));
 
-        Account account = signup.execute(signupRequestInput);
-        assertNotNull(account.getAccountId());
+        SignupOutput response = signup.execute(signupRequestInput);
+        assertNotNull(response.accountId);
         verify(mailerMock, times(1)).send(eq(email), eq("Welcome!"), eq("..."));
     }
 

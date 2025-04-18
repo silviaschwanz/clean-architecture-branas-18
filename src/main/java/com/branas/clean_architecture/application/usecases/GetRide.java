@@ -1,21 +1,21 @@
-package com.branas.clean_architecture.application;
+package com.branas.clean_architecture.application.usecases;
 
 import com.branas.clean_architecture.application.ports.RideRepository;
 import com.branas.clean_architecture.domain.ride.Ride;
-import com.branas.clean_architecture.driver.RideOutput;
+import com.branas.clean_architecture.infra.controller.RideOutput;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GetRide {
 
-    private RideRepository rideDAO;
+    private final RideRepository rideRepository;
 
-    public GetRide(RideRepository rideDAO) {
-        this.rideDAO = rideDAO;
+    public GetRide(RideRepository rideRepository) {
+        this.rideRepository = rideRepository;
     }
 
     public RideOutput execute(String rideId) {
-        Ride ride = rideDAO.getRideById(rideId);
+        Ride ride = rideRepository.getRideById(rideId);
         return new RideOutput(
                 ride.getRideId(),
                 ride.getPassengerId(),

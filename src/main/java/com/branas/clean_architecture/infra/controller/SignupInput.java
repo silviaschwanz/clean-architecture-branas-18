@@ -1,4 +1,4 @@
-package com.branas.clean_architecture.driver;
+package com.branas.clean_architecture.infra.controller;
 
 public record SignupInput(
         String name,

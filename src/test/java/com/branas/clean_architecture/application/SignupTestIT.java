@@ -3,7 +3,8 @@ package com.branas.clean_architecture.application;
 import com.branas.clean_architecture.ContainersConfig;
 import com.branas.clean_architecture.application.usecases.Signup;
 import com.branas.clean_architecture.domain.account.Account;
-import com.branas.clean_architecture.driver.SignupInput;
+import com.branas.clean_architecture.infra.controller.SignupInput;
+import com.branas.clean_architecture.infra.controller.SignupOutput;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -42,8 +43,8 @@ class SignupTestIT {
                 false,
                 "123"
         );
-        Account account = signup.execute(signupRequestInput);
-        assertNotNull(account.getAccountId());
+        SignupOutput response = signup.execute(signupRequestInput);
+        assertNotNull(response.accountId);
     }
 
     @Test

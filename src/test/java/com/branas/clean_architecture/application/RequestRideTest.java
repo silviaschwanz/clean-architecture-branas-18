@@ -1,68 +1,66 @@
 package com.branas.clean_architecture.application;
 
-import com.branas.clean_architecture.ContainersConfig;
-import com.branas.clean_architecture.application.usecases.GetAccount;
-import com.branas.clean_architecture.application.usecases.Signup;
+import com.branas.clean_architecture.application.ports.AccountRepository;
+import com.branas.clean_architecture.application.ports.RideRepository;
+import com.branas.clean_architecture.application.usecases.RequestRide;
 import com.branas.clean_architecture.domain.account.Account;
-import com.branas.clean_architecture.driven.adapters.AccountRepositoryPostgres;
-import com.branas.clean_architecture.driver.RideInput;
-import org.flywaydb.core.Flyway;
+import com.branas.clean_architecture.domain.ride.Ride;
+import com.branas.clean_architecture.infra.controller.RideInput;
+import com.branas.clean_architecture.infra.controller.RideOutput;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Import(ContainersConfig.class)
 class RequestRideTest {
 
-    @Autowired
-    AccountRepositoryPostgres accountRepository;
-
-    @Autowired
-    private Flyway flyway;
-
-    @Autowired
-    RequestRide requestRide;
-
-    @Autowired
-    Signup signup;
-
-    @Autowired
-    GetAccount getAccount;
+    private AccountRepository accountRepository;
+    private RideRepository rideRepository;
+    private RequestRide requestRide;
 
     @BeforeEach
-    public void setUp() {
-        flyway.clean();
-        flyway.migrate();
+    void setUp() {
+        accountRepository = mock(AccountRepository.class);
+        rideRepository = mock(RideRepository.class);
+        requestRide = new RequestRide(accountRepository, rideRepository);
     }
 
     @Test
-    void shouldRequestRide(){
-        var account = accountRepository.saveAccount(
-                Account.create(
-                        "Joao Paulo",
-                        "joao@gmail.com.br",
-                        "97456321558",
-                        "ABC1234",
-                        false,
-                        "123"
-                )
-        );
-        var rideInput = new RideInput(
-                account.getAccountId(),
-                -27.584905257808835,
-                -48.545022195325124,
-                -27.496887588317275,
-                -48.522234807851476
-        );
-        var rideOutput = requestRide.execute(rideInput);
-        assertEquals(account.getAccountId(), rideOutput.passengerId());
+    void shouldCreateRideWhenAccountIsPassenger() {
+        String passengerId = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
+        RideInput input = new RideInput(passengerId, 10.0, -10.0, 20.0, -20.0);
+        Account account = mock(Account.class);
+        when(account.getAccountId()).thenReturn(passengerId);
+        when(account.isPassenger()).thenReturn(true);
+        Ride ride = Ride.create(passengerId, 10.0, -10.0, 20.0, -20.0);
+        when(accountRepository.getAccountById(passengerId)).thenReturn(account);
+        when(rideRepository.saveRide(any(Ride.class))).thenReturn(ride);
+        RideOutput output = requestRide.execute(input);
+        assertNotNull(output);
+        assertEquals(passengerId, output.passengerId());
+        assertEquals(10.0, output.fromLatitude());
+        assertEquals(-10.0, output.fromLongitude());
+        assertEquals(20.0, output.toLatitude());
+        assertEquals(-20.0, output.toLongitude());
+        assertEquals("REQUESTED", output.status());
+        verify(accountRepository).getAccountById(passengerId);
+        verify(rideRepository).saveRide(any(Ride.class));
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAccountIsNotPassenger() {
+        String passengerId = "6ba7b810-9dad-11d1-80b4-00c04fd430c8";
+        RideInput input = new RideInput(passengerId, 10.0, -10.0, 20.0, -20.0);
+        Account account = mock(Account.class);
+        when(account.isPassenger()).thenReturn(false);
+        when(accountRepository.getAccountById(passengerId)).thenReturn(account);
+        RuntimeException exception = assertThrows(RuntimeException.class, () -> {
+            requestRide.execute(input);
+        });
+        assertEquals("Must be a passenger", exception.getMessage());
+        verify(accountRepository).getAccountById(passengerId);
+        verify(rideRepository, never()).saveRide(any());
     }
 
 }

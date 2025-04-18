@@ -1,4 +1,4 @@
-package com.branas.clean_architecture.driven.adapters;
+package com.branas.clean_architecture.infra.repository;
 
 import com.branas.clean_architecture.application.ports.RideRepository;
 import com.branas.clean_architecture.domain.ride.Ride;

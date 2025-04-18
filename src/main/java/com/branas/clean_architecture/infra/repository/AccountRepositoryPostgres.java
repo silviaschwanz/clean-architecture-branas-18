@@ -1,4 +1,4 @@
-package com.branas.clean_architecture.driven.adapters;
+package com.branas.clean_architecture.infra.repository;
 
 import com.branas.clean_architecture.application.ports.AccountRepository;
 import com.branas.clean_architecture.domain.account.Account;
@@ -24,7 +24,7 @@ public class AccountRepositoryPostgres implements AccountRepository {
     }
 
     @Override
-    public void accountAlreadyExists(String email) {
+    public void emailNotRegistered(String email) {
         try (Connection con = dataSource.getConnection()){
             PreparedStatement ps = con.prepareStatement("select * from account where email = ?");
             ps.setString(1, email);
@@ -96,7 +96,7 @@ public class AccountRepositoryPostgres implements AccountRepository {
             if (rowsInserted == 0) {
                 throw new RuntimeException("Failed to insert account, no rows affected");
             }
-            return account;
+            return getAccountByEmail(account.getEmail());
         } catch (SQLException e) {
             throw new RuntimeException("Error saving account", e);
         }

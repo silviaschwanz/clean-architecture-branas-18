@@ -1,4 +1,4 @@
-package com.branas.clean_architecture.driven.adapters;
+package com.branas.clean_architecture.infra.repository;
 
 import com.branas.clean_architecture.application.ports.AccountRepository;
 import com.branas.clean_architecture.domain.account.Account;
@@ -17,7 +17,7 @@ public class AccountRepositoryMemory implements AccountRepository {
         this.accounts = new ArrayList<>();
     }
 
-    public void accountAlreadyExists(String email) {
+    public void emailNotRegistered(String email) {
         boolean exists = accounts.stream().anyMatch(a -> a.getEmail().equals(email));
         if(exists) {
             throw new IllegalStateException("There is already an account with that email");
