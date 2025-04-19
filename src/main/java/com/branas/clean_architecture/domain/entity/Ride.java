@@ -2,6 +2,8 @@ package com.branas.clean_architecture.domain.entity;
 
 import com.branas.clean_architecture.domain.Status;
 import com.branas.clean_architecture.domain.vo.Coordinates;
+import com.branas.clean_architecture.domain.vo.RideStatuFactory;
+import com.branas.clean_architecture.domain.vo.RideStatus;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -12,7 +14,7 @@ public class Ride {
     private UUID rideId;
     private UUID passengerId;
     private UUID driverId;
-    private String status;
+    private RideStatus status;
     private double fare;
     private Coordinates from;
     private Coordinates to;
@@ -31,12 +33,12 @@ public class Ride {
     ) {
         this.rideId = UUID.fromString(rideId);
         this.passengerId = UUID.fromString(passengerId);
-        this.status = status;
         this.fare = 0;
         this.from = new Coordinates(fromLatitude, fromLongitude);
         this.to = new Coordinates(toLatitude, toLongitude);
         this.distance = 0;
         this.date = date;
+        this.status = RideStatuFactory.create(status, this);
     }
 
     private Ride(
@@ -55,13 +57,12 @@ public class Ride {
         this.rideId = rideId;
         this.passengerId = passengerId;
         this.driverId = driverId;
-        this.status = status;
         this.fare = fare;
         this.from = new Coordinates(fromLatitude, fromLongitude);
         this.to = new Coordinates(toLatitude, toLongitude);
         this.distance = distance;
         this.date = date;
-
+        this.status = RideStatuFactory.create(status,this);
     }
 
     public static Ride create(
@@ -141,7 +142,11 @@ public class Ride {
     }
 
     public String getStatus() {
-        return status;
+        return status.getValue();
+    }
+
+    public void setStatus(RideStatus status) {
+        this.status = status;
     }
 
     public double getFare() {
@@ -157,14 +162,12 @@ public class Ride {
     }
 
     public void accept(String driverId) {
-        if(!Objects.equals(this.getStatus(), Status.REQUESTED.toString())) throw new RuntimeException("Invalid status");
-        this.status = Status.ACCEPTED.toString();
+        this.status.accept();
         this.driverId = UUID.fromString(driverId);
     }
 
     public void start() {
-        if(!Objects.equals(this.getStatus(), Status.ACCEPTED.toString())) throw new RuntimeException("Invalid status");
-        this.status = Status.IN_PROGRESS.toString();
+        this.status.start();
     }
 
 }
