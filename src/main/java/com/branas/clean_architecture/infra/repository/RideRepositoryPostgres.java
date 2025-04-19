@@ -1,7 +1,7 @@
 package com.branas.clean_architecture.infra.repository;
 
 import com.branas.clean_architecture.application.ports.RideRepository;
-import com.branas.clean_architecture.domain.ride.Ride;
+import com.branas.clean_architecture.domain.entity.Ride;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -30,8 +30,9 @@ public class RideRepositoryPostgres implements RideRepository {
             ps.setObject(1, UUID.fromString(rideId));
             try (ResultSet rs = ps.executeQuery();) {
                 if (rs.next()) return Ride.restore(
-                        rs.getObject("ride_id", UUID.class).toString(),
-                        rs.getObject("passenger_id", UUID.class).toString(),
+                        rs.getObject("ride_id", UUID.class),
+                        rs.getObject("passenger_id", UUID.class),
+                        rs.getObject("driver_id", UUID.class),
                         rs.getString("status"),
                         rs.getDouble("fare"),
                         rs.getDouble("from_lat"),
@@ -57,8 +58,9 @@ public class RideRepositoryPostgres implements RideRepository {
             try (ResultSet rs = ps.executeQuery();) {
                 while (rs.next()) {
                     rides.add(Ride.restore(
-                                    rs.getObject("ride_id", UUID.class).toString(),
-                                    rs.getObject("passenger_id", UUID.class).toString(),
+                                    rs.getObject("ride_id", UUID.class),
+                                    rs.getObject("passenger_id", UUID.class),
+                                    rs.getObject("driver_id", UUID.class),
                                     rs.getString("status"),
                                     rs.getDouble("fare"),
                                     rs.getDouble("from_lat"),
@@ -82,19 +84,16 @@ public class RideRepositoryPostgres implements RideRepository {
         try (Connection con = dataSource.getConnection()) {
             final PreparedStatement insertStatement = con.prepareStatement(
                     "insert into ride " +
-                            "(ride_id, passenger_id, driver_id, status, fare, from_lat, from_long, to_lat, to_long, distance, date) " +
-                            "values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                            "(ride_id, passenger_id, status, from_lat, from_long, to_lat, to_long, date) " +
+                            "values (?, ?, ?, ?, ?, ?, ?, ?)");
             insertStatement.setObject(1, UUID.fromString(ride.getRideId()));
             insertStatement.setObject(2, UUID.fromString(ride.getPassengerId()));
-            insertStatement.setObject(3, null);
-            insertStatement.setString(4, ride.getStatus());
-            insertStatement.setDouble(5, 0);
-            insertStatement.setDouble(6, ride.getFromLatitude());
-            insertStatement.setDouble(7, ride.getFromLongitude());
-            insertStatement.setDouble(8, ride.getToLatitude());
-            insertStatement.setDouble(9, ride.getToLongitude());
-            insertStatement.setDouble(10,0);
-            insertStatement.setTimestamp(11, Timestamp.valueOf(ride.getDate()));
+            insertStatement.setString(3, ride.getStatus());
+            insertStatement.setDouble(4, ride.getFromLatitude());
+            insertStatement.setDouble(5, ride.getFromLongitude());
+            insertStatement.setDouble(6, ride.getToLatitude());
+            insertStatement.setDouble(7, ride.getToLongitude());
+            insertStatement.setTimestamp(8, Timestamp.valueOf(ride.getDate()));
             int rowsInserted = insertStatement.executeUpdate();
             if (rowsInserted == 0) {
                 throw new RuntimeException("Error saving account, no lines were affected.");
@@ -102,6 +101,23 @@ public class RideRepositoryPostgres implements RideRepository {
             return ride;
         } catch (SQLException e) {
             throw new RuntimeException("Error saving account", e);
+        }
+    }
+
+    @Override
+    public void update(Ride ride) {
+        try (Connection con = dataSource.getConnection()) {
+            final PreparedStatement insertStatement = con.prepareStatement(
+                    "update ride set  driver_id = ?, status = ? "
+            );
+            insertStatement.setObject(1, UUID.fromString(ride.getDriverId()));
+            insertStatement.setString(2, ride.getStatus());
+            int rowsInserted = insertStatement.executeUpdate();
+            if (rowsInserted == 0) {
+                throw new RuntimeException("Error update account, no lines were affected.");
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error update account", e);
         }
     }
 }

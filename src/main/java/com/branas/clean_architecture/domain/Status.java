@@ -1,4 +1,4 @@
-package com.branas.clean_architecture.domain.ride;
+package com.branas.clean_architecture.domain;
 
 public enum Status {
     REQUESTED,

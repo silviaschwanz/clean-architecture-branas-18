@@ -2,9 +2,8 @@ package com.branas.clean_architecture.application;
 
 import com.branas.clean_architecture.ContainersConfig;
 import com.branas.clean_architecture.application.usecases.Signup;
-import com.branas.clean_architecture.domain.account.Account;
-import com.branas.clean_architecture.infra.controller.SignupInput;
-import com.branas.clean_architecture.infra.controller.SignupOutput;
+import com.branas.clean_architecture.application.dto.SignupInput;
+import com.branas.clean_architecture.application.dto.SignupOutput;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,7 +40,7 @@ class SignupTestIT {
                 "2568-236",
                 true,
                 false,
-                "123"
+                "12345678"
         );
         SignupOutput response = signup.execute(signupRequestInput);
         assertNotNull(response.accountId);
@@ -56,7 +55,7 @@ class SignupTestIT {
                 "2568-236",
                 true,
                 false,
-                "123"
+                "12345678"
         );
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             signup.execute(signupRequestInput);
@@ -73,7 +72,7 @@ class SignupTestIT {
                 "2568-236",
                 true,
                 false,
-                "123"
+                "12345678"
         );
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             signup.execute(signupRequestInput);
@@ -90,7 +89,7 @@ class SignupTestIT {
                 "",
                 true,
                 false,
-                "123"
+                "12345678"
         );
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             signup.execute(signupRequestInput);
@@ -107,7 +106,7 @@ class SignupTestIT {
                 "A23",
                 false,
                 true,
-                "123"
+                "12345678"
         );
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
             signup.execute(signupRequestInput);
@@ -124,7 +123,7 @@ class SignupTestIT {
                 "0",
                 true,
                 false,
-                "123"
+                "12345678"
         );
         signup.execute(signupRequestInput);
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {

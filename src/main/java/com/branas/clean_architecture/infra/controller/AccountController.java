@@ -1,8 +1,11 @@
 package com.branas.clean_architecture.infra.controller;
 
+import com.branas.clean_architecture.application.dto.ErrorOutput;
+import com.branas.clean_architecture.application.dto.SignupOutput;
 import com.branas.clean_architecture.application.usecases.GetAccount;
 import com.branas.clean_architecture.application.usecases.RequestRide;
 import com.branas.clean_architecture.application.usecases.Signup;
+import com.branas.clean_architecture.application.dto.SignupInput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

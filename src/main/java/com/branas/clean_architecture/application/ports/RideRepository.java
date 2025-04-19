@@ -1,6 +1,6 @@
 package com.branas.clean_architecture.application.ports;
 
-import com.branas.clean_architecture.domain.ride.Ride;
+import com.branas.clean_architecture.domain.entity.Ride;
 
 import java.util.List;
 
@@ -11,5 +11,7 @@ public interface RideRepository {
     List<Ride> getRidesByPassanger(String passengerId);
 
     Ride saveRide(Ride ride);
+
+    void update(Ride ride);
 
 }

@@ -4,7 +4,7 @@ import com.branas.clean_architecture.application.ports.MailerGateway;
 import com.branas.clean_architecture.application.usecases.Signup;
 import com.branas.clean_architecture.infra.repository.AccountRepositoryMemory;
 import com.branas.clean_architecture.infra.gateway.MailerGatewayMemory;
-import com.branas.clean_architecture.infra.controller.SignupInput;
+import com.branas.clean_architecture.application.dto.SignupInput;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -33,7 +33,7 @@ class SignupWithSpyTest {
                 "2568-236",
                 true,
                 false,
-                "123"
+                "12345678"
         );
         signup.execute(signupRequestInput);
         verify(mailerGateway, times(1)).send(anyString(), anyString(), anyString());

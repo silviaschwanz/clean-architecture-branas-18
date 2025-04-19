@@ -1,5 +1,6 @@
 package com.branas.clean_architecture.domain.ride;
 
+import com.branas.clean_architecture.domain.vo.Coordinates;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

@@ -2,10 +2,10 @@ package com.branas.clean_architecture.application.usecases;
 
 import com.branas.clean_architecture.application.ports.AccountRepository;
 import com.branas.clean_architecture.application.ports.RideRepository;
-import com.branas.clean_architecture.domain.account.Account;
-import com.branas.clean_architecture.domain.ride.Ride;
-import com.branas.clean_architecture.infra.controller.RideInput;
-import com.branas.clean_architecture.infra.controller.RideOutput;
+import com.branas.clean_architecture.domain.entity.Account;
+import com.branas.clean_architecture.domain.entity.Ride;
+import com.branas.clean_architecture.application.dto.RideInput;
+import com.branas.clean_architecture.application.dto.RideOutput;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -37,6 +37,7 @@ public class RequestRide {
         return new RideOutput(
                 ride.getRideId(),
                 ride.getPassengerId(),
+                ride.getDriverId(),
                 ride.getFromLatitude(),
                 ride.getFromLongitude(),
                 ride.getToLatitude(),

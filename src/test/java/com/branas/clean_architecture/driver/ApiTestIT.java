@@ -2,8 +2,8 @@ package com.branas.clean_architecture.driver;
 
 import com.branas.clean_architecture.ContainersConfig;
 import com.branas.clean_architecture.application.ports.AccountRepository;
-import com.branas.clean_architecture.domain.account.Account;
-import com.branas.clean_architecture.infra.controller.SignupInput;
+import com.branas.clean_architecture.domain.entity.Account;
+import com.branas.clean_architecture.application.dto.SignupInput;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -50,7 +50,7 @@ class ApiTestIT {
                 "ABC1234",
                 true,
                 false,
-                "123"
+                "12345678"
         );
         Response response = given()
                 .contentType(ContentType.JSON)
@@ -73,7 +73,7 @@ class ApiTestIT {
                 "ABC1234",
                 true,
                 false,
-                "123"
+                "12345678"
         );
         given()
                 .contentType(ContentType.JSON)
@@ -94,7 +94,7 @@ class ApiTestIT {
                 "2568-236",
                 true,
                 false,
-                "123"
+                "12345678"
         );
         given()
                 .contentType(ContentType.JSON)
@@ -115,7 +115,7 @@ class ApiTestIT {
                 "",
                 true,
                 false,
-                "123"
+                "12345678"
         );
         given()
                 .contentType(ContentType.JSON)
@@ -136,7 +136,7 @@ class ApiTestIT {
                 "A23",
                 false,
                 true,
-                "123"
+                "12345678"
         );
         given()
                 .contentType(ContentType.JSON)
@@ -157,7 +157,7 @@ class ApiTestIT {
                         "97456321558",
                         "ABC1234",
                         true,
-                        "123"
+                        "12345678"
                 )
         );
         var signupRequestInput = new SignupInput(
@@ -167,7 +167,7 @@ class ApiTestIT {
                 "0",
                 true,
                 false,
-                "123"
+                "12345678"
         );
         given()
                 .contentType(ContentType.JSON)
@@ -188,7 +188,7 @@ class ApiTestIT {
                         "97456321558",
                         "ABC1234",
                         true,
-                        "123"
+                        "12345678"
                 )
         );
         var account = accountRepository.getAccountByEmail(accountSaved.getEmail());

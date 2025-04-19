@@ -1,4 +1,6 @@
-package com.branas.clean_architecture.domain.account;
+package com.branas.clean_architecture.domain.entity;
+
+import com.branas.clean_architecture.domain.vo.*;
 
 import java.util.UUID;
 
@@ -119,6 +121,14 @@ public class Account {
 
     public boolean passwordMatch(String rawPassword, String encodedPassword) {
         return password.matches(rawPassword, encodedPassword);
+    }
+
+    public void changePassword(String newPassword) {
+        this.password = new Password(newPassword);
+    }
+
+    public void changeName(String newName) {
+        this.name = new Name(newName);
     }
 
 }

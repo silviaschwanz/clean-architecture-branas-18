@@ -1,4 +1,4 @@
-package com.branas.clean_architecture.infra.controller;
+package com.branas.clean_architecture.application.dto;
 
 public record AccountOutput(
         String accountId,

@@ -3,8 +3,8 @@ package com.branas.clean_architecture.mocks.samples;
 import com.branas.clean_architecture.application.ports.AccountRepository;
 import com.branas.clean_architecture.application.usecases.GetAccount;
 import com.branas.clean_architecture.application.usecases.Signup;
-import com.branas.clean_architecture.infra.controller.SignupInput;
-import com.branas.clean_architecture.infra.controller.SignupOutput;
+import com.branas.clean_architecture.application.dto.SignupInput;
+import com.branas.clean_architecture.application.dto.SignupOutput;
 import com.branas.clean_architecture.infra.gateway.MailerGatewayMemory;
 import com.branas.clean_architecture.infra.repository.AccountRepositoryMemory;
 import org.junit.jupiter.api.DisplayName;
@@ -36,7 +36,7 @@ class SignupWithMockTest {
                 "2568-236",
                 true,
                 false,
-                "123"
+                "12345678"
         );
         doAnswer(invocation -> {
             System.out.println("abc");

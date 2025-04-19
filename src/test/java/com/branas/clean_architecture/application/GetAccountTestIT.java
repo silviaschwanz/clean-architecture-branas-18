@@ -2,7 +2,7 @@ package com.branas.clean_architecture.application;
 
 import com.branas.clean_architecture.ContainersConfig;
 import com.branas.clean_architecture.application.usecases.GetAccount;
-import com.branas.clean_architecture.domain.account.Account;
+import com.branas.clean_architecture.domain.entity.Account;
 import com.branas.clean_architecture.infra.repository.AccountRepositoryPostgres;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
@@ -43,7 +43,7 @@ class GetAccountTestIT {
                         "97456321558",
                         "ABC1234",
                         true,
-                        "123"
+                        "12345678"
                 )
         );
         var account = getAccount.execute(accountSaved.getAccountId());

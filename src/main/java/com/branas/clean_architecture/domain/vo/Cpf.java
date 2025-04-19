@@ -1,4 +1,4 @@
-package com.branas.clean_architecture.domain.account;
+package com.branas.clean_architecture.domain.vo;
 
 import java.util.stream.IntStream;
 

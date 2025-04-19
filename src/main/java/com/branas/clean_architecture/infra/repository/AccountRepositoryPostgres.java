@@ -1,7 +1,7 @@
 package com.branas.clean_architecture.infra.repository;
 
 import com.branas.clean_architecture.application.ports.AccountRepository;
-import com.branas.clean_architecture.domain.account.Account;
+import com.branas.clean_architecture.domain.entity.Account;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;

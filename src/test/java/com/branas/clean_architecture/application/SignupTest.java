@@ -2,11 +2,10 @@ package com.branas.clean_architecture.application;
 
 import com.branas.clean_architecture.application.ports.MailerGateway;
 import com.branas.clean_architecture.application.usecases.Signup;
-import com.branas.clean_architecture.domain.account.Account;
-import com.branas.clean_architecture.infra.controller.SignupOutput;
+import com.branas.clean_architecture.application.dto.SignupOutput;
 import com.branas.clean_architecture.infra.repository.AccountRepositoryMemory;
 import com.branas.clean_architecture.infra.gateway.MailerGatewayMemory;
-import com.branas.clean_architecture.infra.controller.SignupInput;
+import com.branas.clean_architecture.application.dto.SignupInput;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,7 +37,7 @@ class SignupTest {
                 "ABC1234",
                 true,
                 false,
-                "123"
+                "12345678"
         );
         SignupOutput response = signup.execute(signupRequestInput);
         assertNotNull(response.accountId);
@@ -53,7 +52,7 @@ class SignupTest {
                 "0",
                 true,
                 false,
-                "123"
+                "12345678"
         );
         signup.execute(signupRequestInput);
         IllegalStateException exception = assertThrows(IllegalStateException.class, () -> {

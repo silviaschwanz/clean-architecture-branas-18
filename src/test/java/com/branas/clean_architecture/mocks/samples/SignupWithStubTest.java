@@ -3,8 +3,8 @@ package com.branas.clean_architecture.mocks.samples;
 import com.branas.clean_architecture.application.ports.AccountRepository;
 import com.branas.clean_architecture.application.ports.MailerGateway;
 import com.branas.clean_architecture.application.usecases.Signup;
-import com.branas.clean_architecture.domain.account.Account;
-import com.branas.clean_architecture.infra.controller.SignupInput;
+import com.branas.clean_architecture.domain.entity.Account;
+import com.branas.clean_architecture.application.dto.SignupInput;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,7 +47,7 @@ class SignupWithStubTest {
                 savedAccount.getCarPlate(),
                 savedAccount.isPassenger(),
                 savedAccount.isDriver(),
-                "123"
+                "12345678"
         );
         signup.execute(signupRequestInput);
         verify(mailerGateway, times(1)).send(anyString(), anyString(), anyString());

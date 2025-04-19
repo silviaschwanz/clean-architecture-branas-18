@@ -1,5 +1,6 @@
 package com.branas.clean_architecture.domain.account;
 
+import com.branas.clean_architecture.domain.vo.Name;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;

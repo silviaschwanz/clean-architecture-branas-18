@@ -3,9 +3,9 @@ package com.branas.clean_architecture.application;
 import com.branas.clean_architecture.ContainersConfig;
 import com.branas.clean_architecture.application.ports.RideRepository;
 import com.branas.clean_architecture.application.usecases.GetRide;
-import com.branas.clean_architecture.domain.ride.Ride;
-import com.branas.clean_architecture.domain.ride.Status;
-import com.branas.clean_architecture.infra.controller.RideOutput;
+import com.branas.clean_architecture.domain.entity.Ride;
+import com.branas.clean_architecture.domain.Status;
+import com.branas.clean_architecture.application.dto.RideOutput;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,11 +41,13 @@ public class GetRideTestIt {
 
     @Test
     void shouldRetrieveRideById() {
-        String rideId = UUID.randomUUID().toString();
-        String passengerId = UUID.randomUUID().toString();
+        UUID rideId = UUID.randomUUID();
+        UUID passengerId = UUID.randomUUID();
+        UUID driverId = UUID.randomUUID();
         Ride ride = Ride.restore(
                 rideId,
                 passengerId,
+                driverId,
                 Status.REQUESTED.toString(),
                 0.0,
                 10.0, -10.0,
@@ -54,10 +56,10 @@ public class GetRideTestIt {
                 LocalDateTime.now()
         );
         rideRepository.saveRide(ride);
-        RideOutput output = getRide.execute(rideId);
+        RideOutput output = getRide.execute(rideId.toString());
         assertNotNull(output);
-        assertEquals(rideId, output.rideId());
-        assertEquals(passengerId, output.passengerId());
+        assertEquals(rideId.toString(), output.rideId());
+        assertEquals(passengerId.toString(), output.passengerId());
         assertEquals(Status.REQUESTED.toString(), output.status());
         assertEquals(10.0, output.fromLatitude());
         assertEquals(-10.0, output.fromLongitude());

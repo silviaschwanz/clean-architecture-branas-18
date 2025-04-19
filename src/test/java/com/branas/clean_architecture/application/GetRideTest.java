@@ -2,12 +2,13 @@ package com.branas.clean_architecture.application;
 
 import com.branas.clean_architecture.application.ports.RideRepository;
 import com.branas.clean_architecture.application.usecases.GetRide;
-import com.branas.clean_architecture.domain.ride.Ride;
-import com.branas.clean_architecture.infra.controller.RideOutput;
+import com.branas.clean_architecture.domain.entity.Ride;
+import com.branas.clean_architecture.application.dto.RideOutput;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -25,12 +26,14 @@ class GetRideTest {
 
     @Test
     void shouldReturnRideOutputWhenRideExists() {
-        String rideId = "b50c2f71-3702-40f7-9484-69cbfc7ebaf1";
-        String passengerId = "d9bb8f71-829b-4e01-89f9-8a7a3a1735e0";
+        UUID rideId = UUID.randomUUID();
+        UUID passengerId = UUID.randomUUID();
+        UUID driverId = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
         Ride ride = Ride.restore(
                 rideId,
                 passengerId,
+                driverId,
                 "requested",
                 23.5,
                 10.0, -10.0,
@@ -38,16 +41,16 @@ class GetRideTest {
                 15.0,
                 now
         );
-        when(rideRepository.getRideById(rideId)).thenReturn(ride);
-        RideOutput output = getRide.execute(rideId);
-        assertEquals(rideId, output.rideId());
-        assertEquals(passengerId, output.passengerId());
+        when(rideRepository.getRideById(rideId.toString())).thenReturn(ride);
+        RideOutput output = getRide.execute(rideId.toString());
+        assertEquals(rideId.toString(), output.rideId());
+        assertEquals(passengerId.toString(), output.passengerId());
         assertEquals(10.0, output.fromLatitude());
         assertEquals(-10.0, output.fromLongitude());
         assertEquals(20.0, output.toLatitude());
         assertEquals(-20.0, output.toLongitude());
         assertEquals("requested", output.status());
-        verify(rideRepository).getRideById(rideId);
+        verify(rideRepository).getRideById(rideId.toString());
     }
 
     @Test

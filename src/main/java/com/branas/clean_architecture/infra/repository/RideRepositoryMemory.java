@@ -1,7 +1,7 @@
 package com.branas.clean_architecture.infra.repository;
 
 import com.branas.clean_architecture.application.ports.RideRepository;
-import com.branas.clean_architecture.domain.ride.Ride;
+import com.branas.clean_architecture.domain.entity.Ride;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -42,6 +42,17 @@ public class RideRepositoryMemory implements RideRepository {
     public Ride saveRide(Ride ride) {
         rides.add(ride);
         return ride;
+    }
+
+    @Override
+    public void update(Ride updateRide) {
+        Ride existingRide = rides.stream()
+                .filter(ride -> ride.getRideId().equals(updateRide.getRideId()))
+                .findFirst()
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Ride not found")
+                );
+        rides.set(rides.indexOf(existingRide), updateRide);
     }
 
 }

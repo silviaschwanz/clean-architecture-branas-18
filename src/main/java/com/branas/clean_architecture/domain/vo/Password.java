@@ -1,13 +1,16 @@
-package com.branas.clean_architecture.domain.account;
+package com.branas.clean_architecture.domain.vo;
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+// Entity Clean Arch
+// Value Object DDD
 public class Password {
 
     private String value;
     private final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public Password(String value) {
+        if(value.length() < 8) throw new RuntimeException("Invalid Password");
         this.value = encodePassword(value);
     }
 

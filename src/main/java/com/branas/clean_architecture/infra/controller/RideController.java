@@ -1,6 +1,8 @@
 package com.branas.clean_architecture.infra.controller;
 
+import com.branas.clean_architecture.application.dto.ErrorOutput;
 import com.branas.clean_architecture.application.usecases.RequestRide;
+import com.branas.clean_architecture.application.dto.RideInput;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

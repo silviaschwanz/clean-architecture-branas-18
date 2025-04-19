@@ -3,11 +3,11 @@ package com.branas.clean_architecture.application;
 import com.branas.clean_architecture.ContainersConfig;
 import com.branas.clean_architecture.application.ports.RideRepository;
 import com.branas.clean_architecture.application.usecases.RequestRide;
-import com.branas.clean_architecture.domain.account.Account;
-import com.branas.clean_architecture.domain.ride.Ride;
-import com.branas.clean_architecture.domain.ride.Status;
+import com.branas.clean_architecture.domain.entity.Account;
+import com.branas.clean_architecture.domain.entity.Ride;
+import com.branas.clean_architecture.domain.Status;
 import com.branas.clean_architecture.infra.repository.AccountRepositoryPostgres;
-import com.branas.clean_architecture.infra.controller.RideInput;
+import com.branas.clean_architecture.application.dto.RideInput;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,7 +51,7 @@ class RequestRideTestIT {
                         "97456321558",
                         "ABC1234",
                         false,
-                        "123"
+                        "12345678"
                 )
         );
         var rideInput = new RideInput(
@@ -81,7 +81,7 @@ class RequestRideTestIT {
                         "97456321558",
                         "ABC1234",
                         true,
-                        "123"
+                        "12345678"
                 )
         );
         var rideInput = new RideInput(
