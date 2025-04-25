@@ -1,11 +1,15 @@
 package com.branas.clean_architecture;
 
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.testcontainers.containers.PostgreSQLContainer;
 
-@Configuration(proxyBeanMethods = false)
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+
+@TestConfiguration(proxyBeanMethods = false)
 public class ContainersConfig {
 
     @Bean

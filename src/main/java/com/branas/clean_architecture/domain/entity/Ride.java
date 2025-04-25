@@ -1,12 +1,12 @@
 package com.branas.clean_architecture.domain.entity;
 
-import com.branas.clean_architecture.domain.Status;
 import com.branas.clean_architecture.domain.vo.Coordinates;
-import com.branas.clean_architecture.domain.vo.RideStatuFactory;
 import com.branas.clean_architecture.domain.vo.RideStatus;
+import com.branas.clean_architecture.domain.vo.RideStatusFactory;
+import com.branas.clean_architecture.domain.vo.RideStatusRequested;
 
+import java.time.Clock;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import java.util.UUID;
 
 public class Ride {
@@ -22,47 +22,25 @@ public class Ride {
     private LocalDateTime date;
 
     private Ride(
-            String rideId,
-            String passengerId,
-            String status,
-            double fromLatitude,
-            double fromLongitude,
-            double toLatitude,
-            double toLongitude,
-            LocalDateTime date
-    ) {
-        this.rideId = UUID.fromString(rideId);
-        this.passengerId = UUID.fromString(passengerId);
-        this.fare = 0;
-        this.from = new Coordinates(fromLatitude, fromLongitude);
-        this.to = new Coordinates(toLatitude, toLongitude);
-        this.distance = 0;
-        this.date = date;
-        this.status = RideStatuFactory.create(status, this);
-    }
-
-    private Ride(
             UUID rideId,
             UUID passengerId,
             UUID driverId,
-            String status,
+            RideStatus status,
             double fare,
-            double fromLatitude,
-            double fromLongitude,
-            double toLatitude,
-            double toLongitude,
+            Coordinates from,
+            Coordinates to,
             double distance,
             LocalDateTime date
     ) {
-        this.rideId = rideId;
-        this.passengerId = passengerId;
-        this.driverId = driverId;
-        this.fare = fare;
-        this.from = new Coordinates(fromLatitude, fromLongitude);
-        this.to = new Coordinates(toLatitude, toLongitude);
-        this.distance = distance;
-        this.date = date;
-        this.status = RideStatuFactory.create(status,this);
+        this.rideId     = rideId;
+        this.passengerId= passengerId;
+        this.driverId   = driverId;
+        this.status     = status;
+        this.fare       = fare;
+        this.from       = from;
+        this.to         = to;
+        this.distance   = distance;
+        this.date       = date;
     }
 
     public static Ride create(
@@ -70,17 +48,19 @@ public class Ride {
             double fromLatitude,
             double fromLongitude,
             double toLatitude,
-            double toLongitude
+            double toLongitude,
+            Clock clock
     ) {
         return new Ride(
-                UUID.randomUUID().toString(),
-                passengerId,
-                Status.REQUESTED.toString(),
-                fromLatitude,
-                fromLongitude,
-                toLatitude,
-                toLongitude,
-                LocalDateTime.now()
+                UUID.randomUUID(),
+                UUID.fromString(passengerId),
+                null,
+                new RideStatusRequested(),
+                0,
+                new Coordinates(fromLatitude, fromLongitude),
+                new Coordinates(toLatitude, toLongitude),
+                0,
+                LocalDateTime.now(clock)
         );
     }
 
@@ -101,12 +81,10 @@ public class Ride {
                 rideId,
                 passengerId,
                 driverId,
-                status,
+                RideStatusFactory.create(status),
                 fare,
-                fromLatitude,
-                fromLongitude,
-                toLatitude,
-                toLongitude,
+                new Coordinates(fromLatitude, fromLongitude),
+                new Coordinates(toLatitude, toLongitude),
                 distance,
                 date
         );
@@ -145,10 +123,6 @@ public class Ride {
         return status.getValue();
     }
 
-    public void setStatus(RideStatus status) {
-        this.status = status;
-    }
-
     public double getFare() {
         return fare;
     }
@@ -161,13 +135,17 @@ public class Ride {
         return date;
     }
 
+    private void changeStatus(RideStatus status) {
+        this.status = status;
+    }
+
     public void accept(String driverId) {
-        this.status.accept();
+        changeStatus(this.status.accept());
         this.driverId = UUID.fromString(driverId);
     }
 
     public void start() {
-        this.status.start();
+        changeStatus(this.status.start());
     }
 
 }

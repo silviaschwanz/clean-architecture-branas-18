@@ -2,7 +2,6 @@ package com.branas.clean_architecture.application;
 
 import com.branas.clean_architecture.ContainersConfig;
 import com.branas.clean_architecture.application.dto.AcceptRideInput;
-import com.branas.clean_architecture.application.dto.AcceptRideOutput;
 import com.branas.clean_architecture.application.dto.InputStartRide;
 import com.branas.clean_architecture.application.dto.OutputStartRide;
 import com.branas.clean_architecture.application.ports.RideRepository;
@@ -19,6 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
+
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -42,10 +45,14 @@ public class StartRideTestIT {
     @Autowired
     StartRide startRide;
 
+    private static final Instant FIXED_INSTANT = Instant.parse("2025-01-01T12:00:00Z");
+    private Clock fixedClock;
+
     @BeforeEach
     public void setUp() {
         flyway.clean();
         flyway.migrate();
+        fixedClock = Clock.fixed(FIXED_INSTANT, ZoneId.systemDefault());
     }
 
     @Test
@@ -75,7 +82,8 @@ public class StartRideTestIT {
                 -27.584905257808835,
                 -48.545022195325124,
                 -27.496887588317275,
-                -48.522234807851476
+                -48.522234807851476,
+                fixedClock
         );
         rideRepository.saveRide(ride);
         AcceptRideInput acceptRideInput = new AcceptRideInput(
@@ -84,7 +92,7 @@ public class StartRideTestIT {
         );
         acceptRide.execute(acceptRideInput);
         InputStartRide inputStartRide = new InputStartRide(
-            ride.getRideId()
+                ride.getRideId()
         );
         OutputStartRide outputStartRide = startRide.execute(inputStartRide);
         Ride rideStarted = rideRepository.getRideById(outputStartRide.rideId());
@@ -118,7 +126,8 @@ public class StartRideTestIT {
                 -27.584905257808835,
                 -48.545022195325124,
                 -27.496887588317275,
-                -48.522234807851476
+                -48.522234807851476,
+                fixedClock
         );
         rideRepository.saveRide(ride);
         AcceptRideInput acceptRideInput = new AcceptRideInput(

@@ -10,6 +10,10 @@ import com.branas.clean_architecture.application.dto.RideOutput;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -18,12 +22,15 @@ class RequestRideTest {
     private AccountRepository accountRepository;
     private RideRepository rideRepository;
     private RequestRide requestRide;
+    private static final Instant FIXED_INSTANT = Instant.parse("2025-01-01T12:00:00Z");
+    private Clock fixedClock;
 
     @BeforeEach
     void setUp() {
         accountRepository = mock(AccountRepository.class);
         rideRepository = mock(RideRepository.class);
-        requestRide = new RequestRide(accountRepository, rideRepository);
+        fixedClock = Clock.fixed(FIXED_INSTANT, ZoneId.systemDefault());
+        requestRide = new RequestRide(accountRepository, rideRepository, fixedClock);
     }
 
     @Test
@@ -33,7 +40,14 @@ class RequestRideTest {
         Account account = mock(Account.class);
         when(account.getAccountId()).thenReturn(passengerId);
         when(account.isPassenger()).thenReturn(true);
-        Ride ride = Ride.create(passengerId, 10.0, -10.0, 20.0, -20.0);
+        Ride ride = Ride.create(
+                passengerId,
+                10.0,
+                -10.0,
+                20.0,
+                -20.0,
+                fixedClock
+        );
         when(accountRepository.getAccountById(passengerId)).thenReturn(account);
         when(rideRepository.saveRide(any(Ride.class))).thenReturn(ride);
         RideOutput output = requestRide.execute(input);

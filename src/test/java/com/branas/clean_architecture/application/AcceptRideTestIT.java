@@ -1,15 +1,13 @@
 package com.branas.clean_architecture.application;
 
 import com.branas.clean_architecture.ContainersConfig;
+import com.branas.clean_architecture.application.dto.AcceptRideInput;
 import com.branas.clean_architecture.application.dto.AcceptRideOutput;
 import com.branas.clean_architecture.application.ports.RideRepository;
 import com.branas.clean_architecture.application.usecases.AcceptRide;
-import com.branas.clean_architecture.application.usecases.RequestRide;
 import com.branas.clean_architecture.domain.Status;
 import com.branas.clean_architecture.domain.entity.Account;
 import com.branas.clean_architecture.domain.entity.Ride;
-import com.branas.clean_architecture.application.dto.AcceptRideInput;
-import com.branas.clean_architecture.application.dto.RideInput;
 import com.branas.clean_architecture.infra.repository.AccountRepositoryPostgres;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
@@ -19,8 +17,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.Clock;
+import java.time.Instant;
+import java.time.ZoneId;
+
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 @ActiveProfiles("test")
@@ -39,10 +40,14 @@ class AcceptRideTestIT {
     @Autowired
     AcceptRide acceptRide;
 
+    private static final Instant FIXED_INSTANT = Instant.parse("2025-01-01T12:00:00Z");
+    private Clock fixedClock;
+
     @BeforeEach
     public void setUp() {
         flyway.clean();
         flyway.migrate();
+        fixedClock = Clock.fixed(FIXED_INSTANT, ZoneId.systemDefault());
     }
 
     @Test
@@ -72,7 +77,8 @@ class AcceptRideTestIT {
                 -27.584905257808835,
                 -48.545022195325124,
                 -27.496887588317275,
-                -48.522234807851476
+                -48.522234807851476,
+                fixedClock
         );
         rideRepository.saveRide(ride);
         AcceptRideInput acceptRideInput = new AcceptRideInput(
@@ -108,11 +114,12 @@ class AcceptRideTestIT {
                 )
         );
         Ride ride = Ride.create(
-            accountPassanger.getAccountId(),
+                accountPassanger.getAccountId(),
                 -27.584905257808835,
                 -48.545022195325124,
                 -27.496887588317275,
-                -48.522234807851476
+                -48.522234807851476,
+                fixedClock
         );
         rideRepository.saveRide(ride);
         AcceptRideInput acceptRideInput = new AcceptRideInput(

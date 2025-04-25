@@ -8,6 +8,8 @@ import com.branas.clean_architecture.application.dto.RideInput;
 import com.branas.clean_architecture.application.dto.RideOutput;
 import org.springframework.stereotype.Service;
 
+import java.time.Clock;
+
 @Service
 public class RequestRide {
 
@@ -15,9 +17,12 @@ public class RequestRide {
 
     private final RideRepository repository;
 
-    public RequestRide(AccountRepository accountRepository, RideRepository rideRepository) {
+    private final Clock clock;
+
+    public RequestRide(AccountRepository accountRepository, RideRepository rideRepository, Clock clock) {
         this.accountRepository = accountRepository;
         this.repository = rideRepository;
+        this.clock = clock;
     }
 
     public RideOutput execute(RideInput input) {
@@ -31,7 +36,8 @@ public class RequestRide {
                         input.fromLat(),
                         input.fromLongit(),
                         input.toLat(),
-                        input.toLongit()
+                        input.toLongit(),
+                        clock
                 )
         );
         return new RideOutput(

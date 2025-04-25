@@ -1,15 +1,12 @@
 package com.branas.clean_architecture.domain.vo;
 
 import com.branas.clean_architecture.domain.Status;
-import com.branas.clean_architecture.domain.entity.Ride;
 
 public class RideStatusRequested implements RideStatus{
 
     private String value;
-    private Ride ride;
 
-    public RideStatusRequested(Ride ride) {
-        this.ride = ride;
+    public RideStatusRequested() {
         this.value = Status.REQUESTED.toString();
     }
 
@@ -19,17 +16,17 @@ public class RideStatusRequested implements RideStatus{
     }
 
     @Override
-    public void request() {
+    public RideStatus request() {
         throw new RuntimeException("Invalid status");
     }
 
     @Override
-    public void accept() {
-        ride.setStatus(new RideStatusAccepted(this.ride));
+    public RideStatus accept() {
+        return new RideStatusAccepted();
     }
 
     @Override
-    public void start() {
+    public RideStatus start() {
         throw new RuntimeException("Invalid status");
     }
 }
