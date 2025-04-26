@@ -6,7 +6,7 @@ import com.branas.clean_architecture.application.usecases.RequestRide;
 import com.branas.clean_architecture.domain.entity.Account;
 import com.branas.clean_architecture.domain.entity.Ride;
 import com.branas.clean_architecture.domain.Status;
-import com.branas.clean_architecture.infra.repository.AccountRepositoryPostgres;
+import com.branas.clean_architecture.infra.repository.postgres.AccountRepositoryPostgres;
 import com.branas.clean_architecture.application.dto.RideInput;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;

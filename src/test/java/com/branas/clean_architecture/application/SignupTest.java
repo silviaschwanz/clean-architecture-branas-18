@@ -3,7 +3,7 @@ package com.branas.clean_architecture.application;
 import com.branas.clean_architecture.application.ports.MailerGateway;
 import com.branas.clean_architecture.application.usecases.Signup;
 import com.branas.clean_architecture.application.dto.SignupOutput;
-import com.branas.clean_architecture.infra.repository.AccountRepositoryMemory;
+import com.branas.clean_architecture.infra.repository.memory.AccountRepositoryMemory;
 import com.branas.clean_architecture.infra.gateway.MailerGatewayMemory;
 import com.branas.clean_architecture.application.dto.SignupInput;
 import org.junit.jupiter.api.BeforeEach;

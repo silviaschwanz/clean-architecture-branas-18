@@ -1,5 +1,6 @@
 package com.branas.clean_architecture.application.usecases;
 
+import com.branas.clean_architecture.application.dto.RequestRideOutput;
 import com.branas.clean_architecture.application.ports.AccountRepository;
 import com.branas.clean_architecture.application.ports.RideRepository;
 import com.branas.clean_architecture.domain.entity.Account;
@@ -25,7 +26,7 @@ public class RequestRide {
         this.clock = clock;
     }
 
-    public RideOutput execute(RideInput input) {
+    public RequestRideOutput execute(RideInput input) {
         Account account = accountRepository.getAccountById(input.passengerId());
         if(!account.isPassenger()) {
             throw new RuntimeException("Must be a passenger");
@@ -40,7 +41,7 @@ public class RequestRide {
                         clock
                 )
         );
-        return new RideOutput(
+        return new RequestRideOutput(
                 ride.getRideId(),
                 ride.getPassengerId(),
                 ride.getDriverId(),

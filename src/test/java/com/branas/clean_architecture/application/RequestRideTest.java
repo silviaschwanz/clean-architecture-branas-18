@@ -1,5 +1,6 @@
 package com.branas.clean_architecture.application;
 
+import com.branas.clean_architecture.application.dto.RequestRideOutput;
 import com.branas.clean_architecture.application.ports.AccountRepository;
 import com.branas.clean_architecture.application.ports.RideRepository;
 import com.branas.clean_architecture.application.usecases.RequestRide;
@@ -50,7 +51,7 @@ class RequestRideTest {
         );
         when(accountRepository.getAccountById(passengerId)).thenReturn(account);
         when(rideRepository.saveRide(any(Ride.class))).thenReturn(ride);
-        RideOutput output = requestRide.execute(input);
+        RequestRideOutput output = requestRide.execute(input);
         assertNotNull(output);
         assertEquals(passengerId, output.passengerId());
         assertEquals(10.0, output.fromLatitude());

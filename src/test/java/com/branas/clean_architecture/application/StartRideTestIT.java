@@ -10,7 +10,7 @@ import com.branas.clean_architecture.application.usecases.StartRide;
 import com.branas.clean_architecture.domain.Status;
 import com.branas.clean_architecture.domain.entity.Account;
 import com.branas.clean_architecture.domain.entity.Ride;
-import com.branas.clean_architecture.infra.repository.AccountRepositoryPostgres;
+import com.branas.clean_architecture.infra.repository.postgres.AccountRepositoryPostgres;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -3,7 +3,7 @@ package com.branas.clean_architecture.application;
 import com.branas.clean_architecture.ContainersConfig;
 import com.branas.clean_architecture.application.usecases.GetAccount;
 import com.branas.clean_architecture.domain.entity.Account;
-import com.branas.clean_architecture.infra.repository.AccountRepositoryPostgres;
+import com.branas.clean_architecture.infra.repository.postgres.AccountRepositoryPostgres;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

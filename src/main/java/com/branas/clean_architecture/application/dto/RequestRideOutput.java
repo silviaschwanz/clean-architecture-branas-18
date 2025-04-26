@@ -4,7 +4,7 @@ import com.branas.clean_architecture.domain.entity.Position;
 
 import java.util.List;
 
-public record RideOutput(
+public record RequestRideOutput(
         String rideId,
         String passengerId,
         String driverId,
@@ -12,8 +12,6 @@ public record RideOutput(
         double fromLongitude,
         double toLatitude,
         double toLongitude,
-        String status,
-        List<Position> positions,
-        double distance
+        String status
 ) {
 }

@@ -1,13 +1,13 @@
 package com.branas.clean_architecture.domain.entity;
 
-import com.branas.clean_architecture.domain.vo.Coordinates;
-import com.branas.clean_architecture.domain.vo.RideStatus;
-import com.branas.clean_architecture.domain.vo.RideStatusFactory;
-import com.branas.clean_architecture.domain.vo.RideStatusRequested;
+import com.branas.clean_architecture.domain.service.DistanceCalculator;
+import com.branas.clean_architecture.domain.vo.*;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.IntStream;
 
 public class Ride {
 
@@ -20,6 +20,7 @@ public class Ride {
     private Coordinates to;
     private double distance;
     private LocalDateTime date;
+    private List<Position> positions;
 
     private Ride(
             UUID rideId,
@@ -127,10 +128,6 @@ public class Ride {
         return fare;
     }
 
-    public double getDistance() {
-        return distance;
-    }
-
     public LocalDateTime getDate() {
         return date;
     }
@@ -146,6 +143,20 @@ public class Ride {
 
     public void start() {
         changeStatus(this.status.start());
+    }
+
+    public double getDistance() {
+        return distance;
+    }
+
+    public void finishRide(List<Position> positions) {
+        distance = IntStream.range(0, positions.size() - 1)
+                .mapToDouble(i -> DistanceCalculator.calculate(
+                                new Coordinates(positions.get(i).getLatitude(), positions.get(i).getLongitude()),
+                                new Coordinates(positions.get(i + 1).getLatitude(), positions.get(i + 1).getLongitude())
+                        )
+                )
+                .sum();
     }
 
 }

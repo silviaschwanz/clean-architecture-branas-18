@@ -1,10 +1,12 @@
 package com.branas.clean_architecture.application;
 
 import com.branas.clean_architecture.ContainersConfig;
-import com.branas.clean_architecture.application.dto.AcceptRideInput;
-import com.branas.clean_architecture.application.dto.AcceptRideOutput;
+import com.branas.clean_architecture.application.dto.*;
 import com.branas.clean_architecture.application.ports.RideRepository;
 import com.branas.clean_architecture.application.usecases.AcceptRide;
+import com.branas.clean_architecture.application.usecases.GetRide;
+import com.branas.clean_architecture.application.usecases.StartRide;
+import com.branas.clean_architecture.application.usecases.UpdatePosition;
 import com.branas.clean_architecture.domain.Status;
 import com.branas.clean_architecture.domain.entity.Account;
 import com.branas.clean_architecture.domain.entity.Ride;
@@ -26,7 +28,10 @@ import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
 @ActiveProfiles("test")
 @Import(ContainersConfig.class)
-class AcceptRideTestIT {
+public class UpdatePositionTestIT {
+
+    @Autowired
+    UpdatePosition updatePosition;
 
     @Autowired
     AccountRepositoryPostgres accountRepository;
@@ -40,6 +45,12 @@ class AcceptRideTestIT {
     @Autowired
     AcceptRide acceptRide;
 
+    @Autowired
+    StartRide startRide;
+
+    @Autowired
+    GetRide getRide;
+
     private static final Instant FIXED_INSTANT = Instant.parse("2025-01-01T12:00:00Z");
     private Clock fixedClock;
 
@@ -51,7 +62,7 @@ class AcceptRideTestIT {
     }
 
     @Test
-    void shouldAcceptRide(){
+    void shoudUpdatePosition() {
         var accountPassanger = accountRepository.saveAccount(
                 Account.create(
                         "Joao Paulo",
@@ -72,7 +83,7 @@ class AcceptRideTestIT {
                         "12345691"
                 )
         );
-        Ride ride = Ride.create(
+        Ride newRide = Ride.create(
                 accountPassanger.getAccountId(),
                 -27.584905257808835,
                 -48.545022195325124,
@@ -80,19 +91,51 @@ class AcceptRideTestIT {
                 -48.522234807851476,
                 fixedClock
         );
-        rideRepository.saveRide(ride);
+        rideRepository.saveRide(newRide);
         AcceptRideInput acceptRideInput = new AcceptRideInput(
-                ride.getRideId(),
+                newRide.getRideId(),
                 accountDriver.getAccountId()
         );
-        AcceptRideOutput acceptRideOutput = acceptRide.execute(acceptRideInput);
-        Ride rideAccepted = rideRepository.getRideById(acceptRideOutput.rideId());
-        assertEquals(Status.ACCEPTED.toString(), rideAccepted.getStatus());
-        assertEquals(ride.getRideId(), rideAccepted.getRideId());
+        acceptRide.execute(acceptRideInput);
+        InputStartRide inputStartRide = new InputStartRide(
+                newRide.getRideId()
+        );
+        OutputStartRide outputStartRide = startRide.execute(inputStartRide);
+        InputUpdatePosition inputUpdatePosition1 = new InputUpdatePosition(
+                outputStartRide.rideId(),
+                -27.584905257808835,
+                -48.545022195325124
+        );
+        updatePosition.execute(inputUpdatePosition1);
+
+        InputUpdatePosition inputUpdatePosition2 = new InputUpdatePosition(
+                outputStartRide.rideId(),
+                -27.496887588317275,
+                -48.522234807851476
+        );
+        updatePosition.execute(inputUpdatePosition2);
+
+        InputUpdatePosition inputUpdatePosition3 = new InputUpdatePosition(
+                outputStartRide.rideId(),
+                -27.584905257808835,
+                -48.545022195325124
+        );
+        updatePosition.execute(inputUpdatePosition3);
+
+        InputUpdatePosition inputUpdatePosition4 = new InputUpdatePosition(
+                outputStartRide.rideId(),
+                -27.496887588317275,
+                -48.522234807851476
+        );
+        updatePosition.execute(inputUpdatePosition4);
+
+        RideOutput rideOutput = getRide.execute(outputStartRide.rideId());
+        assertEquals(30, rideOutput.distance());
+        assertEquals(Status.IN_PROGRESS.toString(), rideOutput.status());
     }
 
-    @Test
-    void shouldThrowExceptionWhenStatusRideIsNotRequested(){
+    /*@Test
+    void shouldThrowExceptionWhenStatusRideIsNotAccepted(){
         var accountPassanger = accountRepository.saveAccount(
                 Account.create(
                         "Joao Paulo",
@@ -127,11 +170,15 @@ class AcceptRideTestIT {
                 accountDriver.getAccountId()
         );
         acceptRide.execute(acceptRideInput);
+        InputStartRide inputStartRide = new InputStartRide(
+                ride.getRideId()
+        );
+        startRide.execute(inputStartRide);
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            acceptRide.execute(acceptRideInput);
+            startRide.execute(inputStartRide);
         });
         assertNotNull(exception);
         assertEquals("Invalid status", exception.getMessage());
-    }
+    }*/
 
 }

@@ -6,7 +6,7 @@ import com.branas.clean_architecture.application.usecases.Signup;
 import com.branas.clean_architecture.application.dto.SignupInput;
 import com.branas.clean_architecture.application.dto.SignupOutput;
 import com.branas.clean_architecture.infra.gateway.MailerGatewayMemory;
-import com.branas.clean_architecture.infra.repository.AccountRepositoryMemory;
+import com.branas.clean_architecture.infra.repository.memory.AccountRepositoryMemory;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;

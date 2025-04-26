@@ -1,5 +1,6 @@
 package com.branas.clean_architecture.application;
 
+import com.branas.clean_architecture.application.ports.PositionRepository;
 import com.branas.clean_architecture.application.ports.RideRepository;
 import com.branas.clean_architecture.application.usecases.GetRide;
 import com.branas.clean_architecture.domain.Status;
@@ -17,12 +18,14 @@ import static org.mockito.Mockito.*;
 class GetRideTest {
 
     private RideRepository rideRepository;
+    private PositionRepository positionRepository;
     private GetRide getRide;
 
     @BeforeEach
     void setUp() {
         rideRepository = mock(RideRepository.class);
-        getRide = new GetRide(rideRepository);
+        positionRepository = mock(PositionRepository.class);
+        getRide = new GetRide(rideRepository, positionRepository);
     }
 
     @Test

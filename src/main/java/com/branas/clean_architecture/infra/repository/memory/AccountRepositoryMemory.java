@@ -1,4 +1,4 @@
-package com.branas.clean_architecture.infra.repository;
+package com.branas.clean_architecture.infra.repository.memory;
 
 import com.branas.clean_architecture.application.ports.AccountRepository;
 import com.branas.clean_architecture.domain.entity.Account;
