@@ -6,7 +6,6 @@ import com.branas.clean_architecture.application.ports.RideRepository;
 import com.branas.clean_architecture.domain.entity.Account;
 import com.branas.clean_architecture.domain.entity.Ride;
 import com.branas.clean_architecture.application.dto.RideInput;
-import com.branas.clean_architecture.application.dto.RideOutput;
 import org.springframework.stereotype.Service;
 
 import java.time.Clock;

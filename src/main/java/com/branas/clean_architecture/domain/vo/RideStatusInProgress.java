@@ -16,11 +16,6 @@ public class RideStatusInProgress implements RideStatus{
     }
 
     @Override
-    public RideStatus request() {
-        throw new RuntimeException("Invalid status");
-    }
-
-    @Override
     public RideStatus accept() {
         throw new RuntimeException("Invalid status");
     }
@@ -29,4 +24,10 @@ public class RideStatusInProgress implements RideStatus{
     public RideStatus start() {
         throw new RuntimeException("Invalid status");
     }
+
+    @Override
+    public RideStatus finish() {
+        return new RideStatusFinished();
+    }
+
 }

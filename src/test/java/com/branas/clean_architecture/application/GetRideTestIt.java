@@ -5,7 +5,7 @@ import com.branas.clean_architecture.application.ports.RideRepository;
 import com.branas.clean_architecture.application.usecases.GetRide;
 import com.branas.clean_architecture.domain.entity.Ride;
 import com.branas.clean_architecture.domain.Status;
-import com.branas.clean_architecture.application.dto.RideOutput;
+import com.branas.clean_architecture.application.dto.OutputRide;
 import org.flywaydb.core.Flyway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ public class GetRideTestIt {
                 LocalDateTime.now()
         );
         rideRepository.saveRide(ride);
-        RideOutput output = getRide.execute(rideId.toString());
+        OutputRide output = getRide.execute(rideId.toString());
         assertNotNull(output);
         assertEquals(rideId.toString(), output.rideId());
         assertEquals(passengerId.toString(), output.passengerId());

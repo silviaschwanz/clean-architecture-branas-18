@@ -63,7 +63,6 @@ public class PositionRepositoryPostgres implements PositionRepository {
             throw new RuntimeException("Error get position by ride id: " + rideId, e);
         }
         return positions;
-
     }
 
 }

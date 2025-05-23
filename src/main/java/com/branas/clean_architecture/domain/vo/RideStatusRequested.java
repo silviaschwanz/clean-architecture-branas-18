@@ -16,17 +16,17 @@ public class RideStatusRequested implements RideStatus{
     }
 
     @Override
-    public RideStatus request() {
-        throw new RuntimeException("Invalid status");
-    }
-
-    @Override
     public RideStatus accept() {
         return new RideStatusAccepted();
     }
 
     @Override
     public RideStatus start() {
+        throw new RuntimeException("Invalid status");
+    }
+
+    @Override
+    public RideStatus finish() {
         throw new RuntimeException("Invalid status");
     }
 }

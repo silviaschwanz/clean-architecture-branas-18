@@ -1,26 +1,26 @@
 package com.branas.clean_architecture.domain.entity;
 
+import com.branas.clean_architecture.domain.Status;
 import com.branas.clean_architecture.domain.service.DistanceCalculator;
 import com.branas.clean_architecture.domain.vo.*;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.IntStream;
 
 public class Ride {
 
-    private UUID rideId;
-    private UUID passengerId;
+    private final UUID rideId;
+    private final UUID passengerId;
     private UUID driverId;
     private RideStatus status;
     private double fare;
-    private Coordinates from;
-    private Coordinates to;
+    private final Coordinates from;
+    private final Coordinates to;
     private double distance;
-    private LocalDateTime date;
-    private List<Position> positions;
+    private final LocalDateTime date;
 
     private Ride(
             UUID rideId,
@@ -52,17 +52,15 @@ public class Ride {
             double toLongitude,
             Clock clock
     ) {
-        return new Ride(
-                UUID.randomUUID(),
-                UUID.fromString(passengerId),
-                null,
-                new RideStatusRequested(),
-                0,
-                new Coordinates(fromLatitude, fromLongitude),
-                new Coordinates(toLatitude, toLongitude),
-                0,
-                LocalDateTime.now(clock)
-        );
+        var rideId = UUID.randomUUID();
+        var passangerId = UUID.fromString(passengerId);
+        var distance = 0;
+        var fare = 0;
+        var status = new RideStatusRequested();
+        var from = new Coordinates(fromLatitude, fromLongitude);
+        var to = new Coordinates(toLatitude, toLongitude);
+        var date = LocalDateTime.now(clock);
+        return new Ride(rideId, passangerId, null, status, fare, from, to, distance, date);
     }
 
     public static Ride restore(
@@ -78,17 +76,10 @@ public class Ride {
             double distance,
             LocalDateTime date
     ) {
-        return new Ride(
-                rideId,
-                passengerId,
-                driverId,
-                RideStatusFactory.create(status),
-                fare,
-                new Coordinates(fromLatitude, fromLongitude),
-                new Coordinates(toLatitude, toLongitude),
-                distance,
-                date
-        );
+        var statusRestore = RideStatusFactory.create(status);
+        var from = new Coordinates(fromLatitude, fromLongitude);
+        var to = new Coordinates(toLatitude, toLongitude);
+        return new Ride( rideId, passengerId, driverId, statusRestore, fare, from, to, distance, date);
     }
 
     public String getRideId() {
@@ -132,31 +123,35 @@ public class Ride {
         return date;
     }
 
-    private void changeStatus(RideStatus status) {
-        this.status = status;
-    }
-
-    public void accept(String driverId) {
-        changeStatus(this.status.accept());
-        this.driverId = UUID.fromString(driverId);
-    }
-
-    public void start() {
-        changeStatus(this.status.start());
-    }
-
     public double getDistance() {
         return distance;
     }
 
-    public void finishRide(List<Position> positions) {
-        distance = IntStream.range(0, positions.size() - 1)
-                .mapToDouble(i -> DistanceCalculator.calculate(
-                                new Coordinates(positions.get(i).getLatitude(), positions.get(i).getLongitude()),
-                                new Coordinates(positions.get(i + 1).getLatitude(), positions.get(i + 1).getLongitude())
-                        )
-                )
-                .sum();
+    public void accept(String driverId) {
+        changeStatus(status.accept());
+        this.driverId = UUID.fromString(driverId);
     }
+
+    public void start() {
+        changeStatus(status.start());
+    }
+
+    public void validateStatusForUpdatePosition() {
+        if(!(Objects.equals(status.getValue(), Status.IN_PROGRESS.toString()))) {
+            throw new RuntimeException("Invalid status");
+        }
+    }
+
+    public void finish(List<Position> positions) {
+        distance = DistanceCalculator.calculateDistance(positions);
+        fare = distance * 2.0;
+        changeStatus(status.finish());
+    }
+
+    private void changeStatus(RideStatus status) {
+        this.status = status;
+    }
+
+
 
 }

@@ -2,15 +2,14 @@ package com.branas.clean_architecture.domain.vo;
 
 import com.branas.clean_architecture.domain.Status;
 
-public class RideStatusAccepted implements RideStatus{
+public class RideStatusFinished implements RideStatus{
 
-    private String value;
+    private final String value;
 
-    public RideStatusAccepted() {
-        this.value = Status.ACCEPTED.toString();
+    public RideStatusFinished() {
+        this.value = Status.COMPLETED.toString();
     }
 
-    @Override
     public String getValue() {
         return value;
     }
@@ -22,7 +21,7 @@ public class RideStatusAccepted implements RideStatus{
 
     @Override
     public RideStatus start() {
-        return new RideStatusInProgress();
+        throw new RuntimeException("Invalid status");
     }
 
     @Override

@@ -5,7 +5,7 @@ import com.branas.clean_architecture.application.ports.RideRepository;
 import com.branas.clean_architecture.application.usecases.GetRide;
 import com.branas.clean_architecture.domain.Status;
 import com.branas.clean_architecture.domain.entity.Ride;
-import com.branas.clean_architecture.application.dto.RideOutput;
+import com.branas.clean_architecture.application.dto.OutputRide;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -46,7 +46,7 @@ class GetRideTest {
                 now
         );
         when(rideRepository.getRideById(rideId.toString())).thenReturn(ride);
-        RideOutput output = getRide.execute(rideId.toString());
+        OutputRide output = getRide.execute(rideId.toString());
         assertEquals(rideId.toString(), output.rideId());
         assertEquals(passengerId.toString(), output.passengerId());
         assertEquals(10.0, output.fromLatitude());
